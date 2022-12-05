@@ -16,7 +16,8 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "1.0.5",
@@ -43,6 +44,7 @@
     "eslint-config-next": "13.0.2",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.2",
     "prettier": "^2.8.0",
     "prisma": "^4.5.0",
     "typescript": "^4.8.4"

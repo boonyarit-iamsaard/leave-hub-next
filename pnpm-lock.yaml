@@ -17,6 +17,7 @@ specifiers:
   eslint-config-next: 13.0.2
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.2.1
+  husky: ^8.0.2
   next: 13.0.2
   next-auth: 4.17.0
   prettier: ^2.8.0
@@ -52,6 +53,7 @@ devDependencies:
   eslint-config-next: 13.0.2_s5ps7njkmjlaqajutnox5ntcla
   eslint-config-prettier: 8.5.0_eslint@8.29.0
   eslint-plugin-prettier: 4.2.1_nrhoyyjffvfyk4vtlt5destxgm
+  husky: 8.0.2
   prettier: 2.8.0
   prisma: 4.7.1
   typescript: 4.9.3
@@ -1374,6 +1376,12 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       function-bind: 1.1.1
+    dev: true
+
+  /husky/8.0.2:
+    resolution: {integrity: sha512-Tkv80jtvbnkK3mYWxPZePGFpQ/tT3HNSs/sasF9P2YfkMezDl3ON37YN6jUUI4eTg5LcyVynlb6r4eyvOmspvg==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /ignore/5.2.1:
