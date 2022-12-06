@@ -40,7 +40,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
   if (!session || !session.user) {
     return {
       redirect: {
-        destination: '/api/auth/signin',
+        destination: '/login',
         permanent: false,
       },
     };

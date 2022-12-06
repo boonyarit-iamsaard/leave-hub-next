@@ -1,7 +1,7 @@
+import { verify } from 'argon2';
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import { verify } from 'argon2';
 import { prisma } from '../../../server/db/client';
 
 export const authOptions: NextAuthOptions = {
@@ -22,6 +22,9 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+  },
+  pages: {
+    signIn: '/login',
   },
   providers: [
     CredentialsProvider({

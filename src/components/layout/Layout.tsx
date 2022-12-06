@@ -2,6 +2,7 @@ import type { FC, ReactNode } from 'react';
 import { useState } from 'react';
 
 import { AppShell, useMantineTheme } from '@mantine/core';
+import { useSession } from 'next-auth/react';
 
 import LayoutHeader from './LayoutHeader';
 import LayoutNavbar from './LayoutNavbar';
@@ -13,6 +14,7 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({ children }) => {
   const theme = useMantineTheme();
   const [open, setOpen] = useState<boolean>(false);
+  const { data: sessionData } = useSession();
 
   return (
     <AppShell
@@ -25,8 +27,12 @@ const Layout: FC<LayoutProps> = ({ children }) => {
         },
       }}
       navbarOffsetBreakpoint="sm"
-      navbar={<LayoutNavbar open={open} />}
-      header={<LayoutHeader open={open} setOpen={setOpen} theme={theme} />}
+      navbar={sessionData?.user && <LayoutNavbar open={open} />}
+      header={
+        sessionData?.user && (
+          <LayoutHeader open={open} setOpen={setOpen} theme={theme} />
+        )
+      }
     >
       {children}
     </AppShell>

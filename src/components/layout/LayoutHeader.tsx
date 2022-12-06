@@ -10,7 +10,7 @@ import {
   MediaQuery,
   Text,
 } from '@mantine/core';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 interface LayoutHeaderProps {
   open: boolean;
@@ -20,6 +20,10 @@ interface LayoutHeaderProps {
 
 const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
   const { data: sessionData } = useSession();
+
+  const handSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <Header height={{ base: 56, md: 64 }} p="md">
@@ -47,11 +51,8 @@ const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
               {sessionData.user?.name?.charAt(0).toUpperCase()}
             </Avatar>
           )}
-          <Button
-            onClick={sessionData ? () => signOut() : () => signIn()}
-            variant="subtle"
-          >
-            {sessionData ? 'Sign out' : 'Sign in'}
+          <Button onClick={handSignOut} variant="subtle">
+            Sign out
           </Button>
         </Flex>
       </div>
