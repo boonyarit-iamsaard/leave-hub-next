@@ -7,7 +7,6 @@ import { prisma } from '../../../server/db/client';
 export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token, user }) => {
-      console.log('jwt -> ', token, user);
       if (user) {
         token.sub = user.id;
         token.name = user.name;
@@ -15,12 +14,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    session({ session, token, user }) {
-      console.log('session -> ', {
-        session,
-        token,
-        user,
-      });
+    session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
         session.user.name = token.name;
