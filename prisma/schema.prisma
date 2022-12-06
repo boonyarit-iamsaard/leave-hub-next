@@ -15,14 +15,24 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Roster {
+  ENGINEER
+  MECHANIC
+}
+
 model User {
   id           String        @id @default(cuid())
   name         String
   username     String        @unique
   password     String
   email        String        @unique
-  isAdmin      Boolean       @default(false) @map("is_admin")
-  isEngineer   Boolean       @default(false) @map("is_engineer")
+  role         Role          @default(USER)
+  roster       Roster        @default(MECHANIC)
   entitlements Entitlement[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")

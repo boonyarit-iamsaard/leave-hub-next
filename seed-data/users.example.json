@@ -4,7 +4,7 @@
     "username": "",
     "password": "",
     "email": "",
-    "isAdmin": false,
-    "isEngineer": false
+    "role": "USER",
+    "roster": "MECHANIC"
   }
 ]
