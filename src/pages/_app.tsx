@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { type AppType } from 'next/app';
 import Head from 'next/head';
 
+import { Layout } from '../components/layout';
 import '../styles/globals.css';
 import { emotionCache } from '../utils/emotion-cache';
 import { trpc } from '../utils/trpc';
@@ -22,7 +23,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
       <MantineProvider
         emotionCache={emotionCache}
         withGlobalStyles
@@ -31,7 +31,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
           colorScheme: 'light',
         }}
       >
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </MantineProvider>
     </SessionProvider>
   );

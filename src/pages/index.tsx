@@ -1,6 +1,6 @@
-import { Button, Card, Container, Stack, Text, Title } from '@mantine/core';
+import { Card, Container, Stack, Text, Title } from '@mantine/core';
 import { type NextPage } from 'next';
-import { signIn, signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 import { trpc } from '../utils/trpc';
 
@@ -15,7 +15,6 @@ const Home: NextPage = () => {
     <Container size="md" p="md">
       <Stack>
         <Title align="center">Leave Hub | Bangkok Engineering</Title>
-
         <Card radius="md" withBorder>
           <Stack>
             <Text align="center">
@@ -24,17 +23,6 @@ const Home: NextPage = () => {
               )}
               {secretMessage && <span> - {secretMessage}</span>}
             </Text>
-            <Button
-              radius="md"
-              size="md"
-              sx={{
-                display: 'block',
-                marginInline: 'auto',
-              }}
-              onClick={sessionData ? () => signOut() : () => signIn()}
-            >
-              {sessionData ? 'Sign out' : 'Sign in'}
-            </Button>
           </Stack>
         </Card>
       </Stack>
