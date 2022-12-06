@@ -1,6 +1,8 @@
 import { Card, Container, Stack, Text, Title } from '@mantine/core';
+import type { GetServerSideProps } from 'next';
 import { type NextPage } from 'next';
 import { useSession } from 'next-auth/react';
+import { getServerAuthSession } from '../server/common/get-server-auth-session';
 
 import { trpc } from '../utils/trpc';
 
@@ -12,9 +14,9 @@ const Home: NextPage = () => {
   );
 
   return (
-    <Container size="md" p="md">
+    <Container size="md" px={0}>
       <Stack>
-        <Title align="center">Leave Hub | Bangkok Engineering</Title>
+        <Title>Dashboard</Title>
         <Card radius="md" withBorder>
           <Stack>
             <Text align="center">
@@ -31,3 +33,30 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const session = await getServerAuthSession(context);
+
+  if (!session || !session.user) {
+    return {
+      redirect: {
+        destination: '/api/auth/signin',
+        permanent: false,
+      },
+    };
+  }
+
+  // TODO: Consider improving this
+  const { id, name, role } = session.user;
+  return {
+    props: {
+      session: {
+        user: {
+          id,
+          name,
+          role,
+        },
+      },
+    },
+  };
+};
