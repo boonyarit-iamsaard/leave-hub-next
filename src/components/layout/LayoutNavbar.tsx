@@ -10,9 +10,9 @@ const LayoutNavbar: FC<LayoutNavbarProps> = ({ open }) => {
   return (
     <Navbar
       p="md"
-      hiddenBreakpoint="sm"
+      hiddenBreakpoint="md"
       hidden={!open}
-      width={{ sm: 240, lg: 320 }}
+      width={{ md: 240, lg: 320 }}
     >
       <Text>Navbar</Text>
     </Navbar>

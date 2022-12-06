@@ -26,7 +26,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
               : theme.colors.gray[0],
         },
       }}
-      navbarOffsetBreakpoint="sm"
+      navbarOffsetBreakpoint="md"
       navbar={sessionData?.user && <LayoutNavbar open={open} />}
       header={
         sessionData?.user && (
