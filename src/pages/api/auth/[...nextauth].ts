@@ -1,29 +1,68 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
-import DiscordProvider from 'next-auth/providers/discord';
-// Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
-import { env } from '../../../env/server.mjs';
+import { verify } from 'argon2';
 import { prisma } from '../../../server/db/client';
 
 export const authOptions: NextAuthOptions = {
-  // Include user.id on session
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    jwt: async ({ token, user }) => {
+      console.log('jwt -> ', token, user);
+      if (user) {
+        token.sub = user.id;
+        token.name = user.name;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session({ session, token, user }) {
+      console.log('session -> ', {
+        session,
+        token,
+        user,
+      });
+      if (session.user && token.sub) {
+        session.user.id = token.sub;
+        session.user.name = token.name;
+        session.user.role = token.role;
       }
       return session;
     },
   },
-  // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        username: { label: 'Username', type: 'text', placeholder: 'username' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        // TODO: Validate credentials using zod
+        if (!credentials?.username || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: {
+            username: credentials.username,
+          },
+        });
+        if (!user) {
+          return null;
+        }
+
+        const isValid = await verify(user.password, credentials.password);
+        if (!isValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+        };
+      },
     }),
-    // ...add more providers here
   ],
 };
 
