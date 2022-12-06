@@ -1,10 +1,12 @@
-import { type AppType } from 'next/app';
+import { MantineProvider } from '@mantine/core';
 import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-
-import { trpc } from '../utils/trpc';
+import { type AppType } from 'next/app';
+import Head from 'next/head';
 
 import '../styles/globals.css';
+import { emotionCache } from '../utils/emotion-cache';
+import { trpc } from '../utils/trpc';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,7 +14,25 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <Head>
+        <title>Leave Hub | Bangkok Engineering</title>
+        <meta
+          name="description"
+          content="Leave management system for Bangkok engineering"
+        />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <MantineProvider
+        emotionCache={emotionCache}
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{
+          colorScheme: 'light',
+        }}
+      >
+        <Component {...pageProps} />
+      </MantineProvider>
     </SessionProvider>
   );
 };
