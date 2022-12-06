@@ -6,16 +6,19 @@ const prisma = new PrismaClient();
 
 const main = async () => {
   users.forEach(async user => {
-    const hashedPassword = await hash(user.password);
-    const userRole = user.role === 'ADMIN' ? Role.ADMIN : Role.USER;
+    const { name, username, password, email, role, roster } = user;
+    const hashedPassword = await hash(password);
+    const userRole = role === 'ADMIN' ? Role.ADMIN : Role.USER;
     const userRoster =
-      user.roster === 'ENGINEER' ? Roster.ENGINEER : Roster.MECHANIC;
+      roster === 'ENGINEER' ? Roster.ENGINEER : Roster.MECHANIC;
 
     await prisma.user.upsert({
       where: { username: user.username },
       update: {},
       create: {
-        ...user,
+        name,
+        username,
+        email,
         role: userRole,
         roster: userRoster,
         password: hashedPassword,
