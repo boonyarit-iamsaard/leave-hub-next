@@ -12,6 +12,7 @@ import type {
 } from 'next';
 import { useSession } from 'next-auth/react';
 
+import { useRouter } from 'next/router';
 import { getServerAuthSession } from '../../server/common/get-server-auth-session';
 import { trpc } from '../../utils/trpc';
 
@@ -28,8 +29,9 @@ const AdminPage: NextPage<
 > = () => {
   const PAGE_SIZE = 10;
 
+  const router = useRouter();
   const { data: sessionData } = useSession();
-  const { data: users } = trpc.admin.getUsers.useQuery(undefined, {
+  const { data: users } = trpc.user.findAll.useQuery(undefined, {
     enabled: sessionData?.user !== undefined,
   });
 
@@ -68,7 +70,12 @@ const AdminPage: NextPage<
         <DataTable
           columns={columns}
           onPageChange={p => setPage(p)}
-          onRowClick={({ email }) => alert(email)}
+          onRowClick={({ id }) =>
+            router.push({
+              pathname: '/admin/users/[id]',
+              query: { id },
+            })
+          }
           page={page}
           records={records}
           recordsPerPage={PAGE_SIZE}
