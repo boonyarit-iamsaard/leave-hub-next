@@ -27,7 +27,9 @@ const Layout: FC<LayoutProps> = ({ children }) => {
         },
       }}
       navbarOffsetBreakpoint="md"
-      navbar={sessionData?.user && <LayoutNavbar open={open} />}
+      navbar={
+        sessionData?.user && <LayoutNavbar open={open} setOpen={setOpen} />
+      }
       header={
         sessionData?.user && (
           <LayoutHeader open={open} setOpen={setOpen} theme={theme} />

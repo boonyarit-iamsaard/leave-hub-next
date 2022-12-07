@@ -32,12 +32,14 @@ specifiers:
   eslint-config-prettier: ^8.5.0
   eslint-plugin-prettier: ^4.2.1
   husky: ^8.0.2
+  mantine-datatable: ^1.7.24
   next: 13.0.2
   next-auth: 4.17.0
   prettier: ^2.8.0
   prisma: ^4.5.0
   react: 18.2.0
   react-dom: 18.2.0
+  react-icons: ^4.7.1
   superjson: 1.9.1
   ts-node: ^10.9.1
   typescript: ^4.8.4
@@ -63,10 +65,12 @@ dependencies:
   '@trpc/server': 10.4.3
   argon2: 0.30.2
   dayjs: 1.11.6
+  mantine-datatable: 1.7.24_2pltzneqv4wv27mewoeyrtq5am
   next: 13.0.2_672uxklweod7ene3nqtsh262ca
   next-auth: 4.17.0_pknogjuzx4bv7zxtatcb2ahtsq
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  react-icons: 4.7.1_react@18.2.0
   superjson: 1.9.1
   zod: 3.19.1
 
@@ -3216,6 +3220,18 @@ packages:
     resolution: {integrity: sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==}
     dev: true
 
+  /mantine-datatable/1.7.24_2pltzneqv4wv27mewoeyrtq5am:
+    resolution: {integrity: sha512-yyoUipYLoT/GgMD5vJDywrph7iw75DO4sMwXytk6cqvE9lWGsCElhqdpEh96SaOLKogXWdheMP7jrxPI2S7vJA==}
+    peerDependencies:
+      '@mantine/core': ^5.9.1
+      '@mantine/hooks': ^5.9.1
+      react: ^18.2.0
+    dependencies:
+      '@mantine/core': 5.9.2_kwa64wp3o255f3haoqdqgn5mma
+      '@mantine/hooks': 5.9.2_react@18.2.0
+      react: 18.2.0
+    dev: false
+
   /map-obj/1.0.1:
     resolution: {integrity: sha512-7N/q3lyZ+LVCp7PzuxrJr4KMbBE2hW7BT7YNia330OFxIf4d3r5zVpicP2650l7CPN6RM9zOJRl3NGpqSiw3Eg==}
     engines: {node: '>=0.10.0'}
@@ -3750,6 +3766,14 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-icons/4.7.1_react@18.2.0:
+    resolution: {integrity: sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:

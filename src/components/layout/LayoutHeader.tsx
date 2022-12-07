@@ -28,18 +28,17 @@ const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
   return (
     <Header height={{ base: 56, md: 64 }} p="md">
       <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-        <div>
-          <MediaQuery largerThan="sm" styles={{ display: 'none' }}>
+        <Flex gap="md" justify="flex-start" align="center">
+          <MediaQuery largerThan="md" styles={{ display: 'none' }}>
             <Burger
               opened={open}
               onClick={() => setOpen(open => !open)}
               size="sm"
               color={theme.colors.gray[6]}
-              mr="xl"
             />
           </MediaQuery>
           <Text fw="bold">Leave Hub | Bangkok Engineering</Text>
-        </div>
+        </Flex>
         <Flex
           gap="md"
           justify="flex-end"

@@ -1,12 +1,15 @@
-import type { FC } from 'react';
+import type { Dispatch, FC, SetStateAction } from 'react';
 
-import { Navbar, Text } from '@mantine/core';
+import { Navbar } from '@mantine/core';
+
+import LayoutNavLinkList from './LayoutNavLinkList';
 
 interface LayoutNavbarProps {
   open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-const LayoutNavbar: FC<LayoutNavbarProps> = ({ open }) => {
+const LayoutNavbar: FC<LayoutNavbarProps> = ({ open, setOpen }) => {
   return (
     <Navbar
       p="md"
@@ -14,7 +17,7 @@ const LayoutNavbar: FC<LayoutNavbarProps> = ({ open }) => {
       hidden={!open}
       width={{ md: 240, lg: 320 }}
     >
-      <Text>Navbar</Text>
+      <LayoutNavLinkList setOpen={setOpen} />
     </Navbar>
   );
 };
