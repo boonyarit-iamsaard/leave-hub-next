@@ -5,40 +5,51 @@ import dayjs from 'dayjs';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-const Roster: NextPage = () => {
-  const router = useRouter();
-  const { roster, year, month } = router.query;
+const RosterPage: NextPage = () => {
+  const { query, isReady, push } = useRouter();
+  const { roster, year, month } = query;
 
   const [fullMonthName, setFullMonthName] = useState<string | null>(null);
+  const [routerReady, setRouterReady] = useState<boolean>(false);
+
+  //----- Validate the query parameters start here -----//
+  // TODO: Implement a validation for the year, month are correct format
+  // TODO: Implement a custom hook to validate the query parameters
+  const validYear = !!year && typeof year === 'string';
+  const validMonth = !!month && typeof month === 'string';
+  const validRoster =
+    !!roster &&
+    typeof roster === 'string' &&
+    ['mechanic', 'engineer'].includes(roster);
+  const validQueries = validYear && validMonth && validRoster;
+  //----- Validate the query parameters end here -----//
 
   const handleClickNext = () => {
     const nextMonth = dayjs(`${year}-${month}-01`).add(1, 'month');
-    router.push(
-      `/roster/${roster}/${nextMonth.year()}/${nextMonth.month() + 1}`
-    );
+    push(`/roster/${roster}/${nextMonth.year()}/${nextMonth.month() + 1}`);
   };
-
   const handleClickPrevious = () => {
     const previousMonth = dayjs(`${year}-${month}-01`).subtract(1, 'month');
-    router.push(
+    push(
       `/roster/${roster}/${previousMonth.year()}/${previousMonth.month() + 1}`
     );
   };
 
   useEffect(() => {
-    if (!month || !year) {
+    if (!isReady || !validQueries) {
       return;
     }
     const fullMonthName = dayjs(`${year}-${month}-01`).format('MMMM');
     setFullMonthName(fullMonthName);
-  }, [month, year]);
+    setRouterReady(isReady);
+  }, [month, isReady, validQueries, year]);
 
   return (
     <Container size="lg" px={0}>
       <Stack>
         <Title>
           <span>
-            {roster && typeof roster === 'string'
+            {routerReady && validQueries
               ? roster.charAt(0).toUpperCase() + roster.slice(1)
               : null}{' '}
           </span>
@@ -53,9 +64,13 @@ const Roster: NextPage = () => {
             <span>Next</span>
           </Button>
         </Flex>
+        {/* TODO: If the router is ready and the queries are valid, display the roster */}
+        {routerReady && validQueries ? (
+          <pre>{JSON.stringify(query, null, 2)}</pre>
+        ) : null}
       </Stack>
     </Container>
   );
 };
 
-export default Roster;
+export default RosterPage;
