@@ -10,12 +10,26 @@ import { hash } from 'argon2';
 import dayjs from 'dayjs';
 
 import entitlements from '../seed-data/entitlements.json';
+import publicHolidays from '../seed-data/public-holidays.json';
 import shifts from '../seed-data/shifts.json';
 import users from '../seed-data/users.json';
 
 const prisma = new PrismaClient();
 
 const main = async () => {
+  publicHolidays.forEach(async holiday => {
+    const { date, name } = holiday;
+    await prisma.publicHoliday.upsert({
+      where: { date: new Date(date) },
+      update: {},
+      create: {
+        date: new Date(date),
+        name,
+      },
+    });
+
+    console.log(`Public holiday ${name} created successfully ✅`);
+  });
   users.forEach(async user => {
     const { name, username, password, email, role, roster } = user;
 

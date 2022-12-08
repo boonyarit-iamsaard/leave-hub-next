@@ -45,3 +45,4 @@ yarn-error.log*
 /seed-data/users.json
 /seed-data/entitlements.json
 /seed-data/shifts.json
+/seed-data/public-holidays.json
