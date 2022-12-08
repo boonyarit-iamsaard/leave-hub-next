@@ -43,3 +43,4 @@ yarn-error.log*
 
 # seed data
 /seed-data/users.json
+/seed-data/entitlements.json
