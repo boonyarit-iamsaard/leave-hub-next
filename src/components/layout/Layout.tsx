@@ -36,6 +36,7 @@ const Layout: FC<LayoutProps> = ({ children }) => {
         )
       }
     >
+      {/* TODO: Fix layout shift caused by header */}
       {children}
     </AppShell>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Container, Stack, Title } from '@mantine/core';
+import { Container, Loader, Stack, Title } from '@mantine/core';
 import type { Roster } from '@prisma/client';
 import { Role } from '@prisma/client';
 import type { DataTableColumn } from 'mantine-datatable';
@@ -31,9 +31,12 @@ const AdminPage: NextPage<
 
   const router = useRouter();
   const { data: sessionData } = useSession();
-  const { data: users } = trpc.user.findAll.useQuery(undefined, {
-    enabled: sessionData?.user !== undefined,
-  });
+  const { data: users, isLoading: loading } = trpc.user.findAll.useQuery(
+    undefined,
+    {
+      enabled: sessionData?.user !== undefined,
+    }
+  );
 
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState<UserRecord[]>([]);
@@ -66,23 +69,26 @@ const AdminPage: NextPage<
     <Container size="md" px={0}>
       <Stack>
         <Title>Admin</Title>
-        {/* TODO: Fix no data flash */}
-        <DataTable
-          columns={columns}
-          onPageChange={p => setPage(p)}
-          onRowClick={({ id }) =>
-            router.push({
-              pathname: '/admin/users/[id]',
-              query: { id },
-            })
-          }
-          page={page}
-          records={records}
-          recordsPerPage={PAGE_SIZE}
-          striped
-          totalRecords={users?.length ?? 0}
-          withBorder
-        />
+        {loading ? (
+          <Loader variant="dots" sx={{ marginInline: 'auto' }} />
+        ) : (
+          <DataTable
+            columns={columns}
+            onPageChange={p => setPage(p)}
+            onRowClick={({ id }) =>
+              router.push({
+                pathname: '/admin/users/[id]',
+                query: { id },
+              })
+            }
+            page={page}
+            records={records}
+            recordsPerPage={PAGE_SIZE}
+            striped
+            totalRecords={users?.length ?? 0}
+            withBorder
+          />
+        )}
       </Stack>
     </Container>
   );
