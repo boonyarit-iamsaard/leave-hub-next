@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { adminProcedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
 export const userRouter = router({
-  findAll: adminProcedure.query(async ({ ctx }) => {
+  findAll: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.user.findMany({
       select: {
         id: true,
@@ -13,7 +13,7 @@ export const userRouter = router({
       },
     });
   }),
-  fineOneById: adminProcedure
+  fineOneById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.user.findUnique({
