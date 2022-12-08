@@ -25,6 +25,25 @@ enum Roster {
   MECHANIC
 }
 
+enum ShiftType {
+  OFF
+  LEAVE
+  HOLIDAY
+}
+
+enum ShiftStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ShiftPriority {
+  NORMAL
+  ANL1
+  ANL2
+  ANL3
+}
+
 model User {
   id           String        @id @default(cuid())
   name         String
@@ -34,6 +53,7 @@ model User {
   role         Role          @default(USER)
   roster       Roster        @default(MECHANIC)
   entitlements Entitlement[]
+  shifts       Shift[]
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
@@ -50,6 +70,23 @@ model Entitlement {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@index([userId], name: "entitlements_user_id_index")
+  @@index([userId])
   @@map("entitlements")
+}
+
+model Shift {
+  id        String        @id @default(cuid())
+  type      ShiftType     @default(LEAVE)
+  status    ShiftStatus   @default(PENDING)
+  priority  ShiftPriority @default(NORMAL)
+  start     DateTime      @db.Date()
+  end       DateTime      @db.Date()
+  amount    Int
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("shifts")
 }

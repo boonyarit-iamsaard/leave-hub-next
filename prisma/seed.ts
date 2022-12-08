@@ -1,7 +1,16 @@
-import { PrismaClient, Role, Roster } from '@prisma/client';
+import {
+  PrismaClient,
+  Role,
+  Roster,
+  ShiftPriority,
+  ShiftStatus,
+  ShiftType,
+} from '@prisma/client';
 import { hash } from 'argon2';
+import dayjs from 'dayjs';
 
 import entitlements from '../seed-data/entitlements.json';
+import shifts from '../seed-data/shifts.json';
 import users from '../seed-data/users.json';
 
 const prisma = new PrismaClient();
@@ -9,6 +18,7 @@ const prisma = new PrismaClient();
 const main = async () => {
   users.forEach(async user => {
     const { name, username, password, email, role, roster } = user;
+
     const hashedPassword = await hash(password);
     const userRole = role === 'ADMIN' ? Role.ADMIN : Role.USER;
     const userRoster =
@@ -16,6 +26,16 @@ const main = async () => {
     const userEntitlements = entitlements
       .filter(entitlement => entitlement.username === username)
       .map(({ year, amount, name }) => ({ year, amount, name }));
+    const userShifts = shifts
+      .filter(shift => shift.username === username)
+      .map(({ type, status, priority, start, end }) => ({
+        type: ShiftType[type as keyof typeof ShiftType],
+        status: ShiftStatus[status as keyof typeof ShiftStatus],
+        priority: ShiftPriority[priority as keyof typeof ShiftPriority],
+        start: new Date(start),
+        end: new Date(end),
+        amount: dayjs(end).diff(dayjs(start), 'day') + 1,
+      }));
 
     await prisma.user.upsert({
       where: { username: user.username },
@@ -29,6 +49,9 @@ const main = async () => {
         password: hashedPassword,
         entitlements: {
           create: userEntitlements,
+        },
+        shifts: {
+          create: userShifts,
         },
       },
     });
