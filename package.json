@@ -6,9 +6,8 @@
   "private": true,
   "engines": {
     "node": ">=16.0.0",
-    "npm": "please use pnpm",
-    "yarn": "please use pnpm",
-    "pnpm": ">=6.0.0"
+    "npm": "please use yarn",
+    "yarn": ">=1.22.0"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
