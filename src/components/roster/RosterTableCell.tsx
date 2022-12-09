@@ -2,6 +2,8 @@ import type { FC } from 'react';
 
 import { Center } from '@mantine/core';
 
+import { transformRosterCellValue } from '../../utils/roster';
+
 const RosterTableCell: FC<{ value: string }> = ({ value }) => {
   return (
     <Center
@@ -11,7 +13,7 @@ const RosterTableCell: FC<{ value: string }> = ({ value }) => {
         borderLeft: `1px solid ${theme.colors.gray[3]}`,
       })}
     >
-      {value}
+      {transformRosterCellValue(value)}
     </Center>
   );
 };

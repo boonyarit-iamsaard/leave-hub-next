@@ -2,6 +2,7 @@ import type { FC } from 'react';
 
 import { Box } from '@mantine/core';
 
+import RosterTableBody from './RosterTableBody';
 import RosterTableHeader from './RosterTableHeader';
 
 interface RosterTableProps {
@@ -13,6 +14,7 @@ interface RosterTableProps {
 const RosterTable: FC<RosterTableProps> = ({ month, roster, year }) => {
   return (
     <Box
+      id="roster-table"
       fz="sm"
       sx={theme => ({
         overflowX: 'auto',
@@ -23,6 +25,9 @@ const RosterTable: FC<RosterTableProps> = ({ month, roster, year }) => {
     >
       {/* RosterTableHeader */}
       <RosterTableHeader month={month} year={year} />
+
+      {/* RosterTableBody */}
+      <RosterTableBody month={month} roster={roster} year={year} />
     </Box>
   );
 };

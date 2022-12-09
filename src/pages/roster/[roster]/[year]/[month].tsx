@@ -46,6 +46,15 @@ const RosterPage: NextPage = () => {
     setRouterReady(isReady);
   }, [month, isReady, validQueries, year]);
 
+  useEffect(() => {
+    const rosterTable = document.getElementById('roster-table');
+    rosterTable?.scrollTo({
+      left: -10000,
+      top: 0,
+      behavior: 'smooth',
+    });
+  }, [year, month]);
+
   return (
     <Container size="lg" px={0}>
       <Stack>

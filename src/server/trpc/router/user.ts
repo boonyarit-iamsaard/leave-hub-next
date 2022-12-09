@@ -1,3 +1,4 @@
+import { Roster } from '@prisma/client';
 import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
 
@@ -13,6 +14,22 @@ export const userRouter = router({
       },
     });
   }),
+  findManyByRoster: protectedProcedure
+    .input(z.object({ roster: z.nativeEnum(Roster) }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findMany({
+        where: {
+          roster: input.roster,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          roster: true,
+        },
+      });
+    }),
   fineOneById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
