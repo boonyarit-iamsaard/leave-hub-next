@@ -5,6 +5,8 @@ import dayjs from 'dayjs';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
+import { RosterTable } from '../../../../components/roster';
+
 const RosterPage: NextPage = () => {
   const { query, isReady, push } = useRouter();
   const { roster, year, month } = query;
@@ -57,16 +59,24 @@ const RosterPage: NextPage = () => {
           <span>{year}</span>
         </Title>
         <Flex justify="space-between">
-          <Button variant="light" onClick={handleClickPrevious}>
+          <Button
+            variant="light"
+            onClick={handleClickPrevious}
+            disabled={!routerReady && !validQueries}
+          >
             <span>Previous</span>
           </Button>
-          <Button variant="light" onClick={handleClickNext}>
+          <Button
+            variant="light"
+            onClick={handleClickNext}
+            disabled={!routerReady && !validQueries}
+          >
             <span>Next</span>
           </Button>
         </Flex>
         {/* TODO: If the router is ready and the queries are valid, display the roster */}
         {routerReady && validQueries ? (
-          <pre>{JSON.stringify(query, null, 2)}</pre>
+          <RosterTable month={month} roster={roster} year={year} />
         ) : null}
       </Stack>
     </Container>
