@@ -1,5 +1,6 @@
 import { Roster } from '@prisma/client';
 import { z } from 'zod';
+
 import { protectedProcedure, router } from '../trpc';
 
 export const userRouter = router({
@@ -15,7 +16,7 @@ export const userRouter = router({
     });
   }),
   findManyByRoster: protectedProcedure
-    .input(z.object({ roster: z.nativeEnum(Roster) }))
+    .input(z.object({ roster: z.nativeEnum(Roster), year: z.string() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.user.findMany({
         where: {
@@ -27,6 +28,11 @@ export const userRouter = router({
           name: true,
           role: true,
           roster: true,
+          rosterSequence: {
+            where: {
+              year: parseInt(input.year),
+            },
+          },
         },
       });
     }),

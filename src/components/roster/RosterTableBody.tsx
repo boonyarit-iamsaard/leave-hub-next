@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { Flex } from '@mantine/core';
 import { Roster } from '@prisma/client';
+import { sortBy } from 'lodash';
 import { useSession } from 'next-auth/react';
 
 import type { ShiftRow } from '../../types/roster';
@@ -22,7 +23,7 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
 
   const { data: sessionData } = useSession();
   const { data: userData } = trpc.user.findManyByRoster.useQuery(
-    { roster: rosterInput },
+    { roster: rosterInput, year },
     { enabled: sessionData?.user !== undefined }
   );
   const { data: shiftData } = trpc.shift.findManyByRoster.useQuery(
@@ -34,10 +35,14 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
 
   useEffect(() => {
     if (userData && shiftData) {
-      const titles = userData
-        .map(user => ({ id: user.id, name: extractFirstName(user.name) }))
-        // TODO: Implement sorting by roster sequence
-        .sort();
+      const sortedUserData = sortBy(userData, user => {
+        return user.rosterSequence[0]?.sequence;
+      });
+
+      const titles = sortedUserData.map(user => ({
+        id: user.id,
+        name: extractFirstName(user.name),
+      }));
 
       const shiftRows = populateRosterBodyRows(titles, shiftData, year, month);
       setShiftRows(shiftRows);
@@ -45,7 +50,7 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
   }, [userData, shiftData, year, month]);
 
   return (
-    <div>
+    <>
       {shiftRows.map(row => (
         <Flex h={32} key={row.name.id}>
           <RosterTableRowTitle value={row.name.name} />
@@ -54,7 +59,7 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
           ))}
         </Flex>
       ))}
-    </div>
+    </>
   );
 };
 

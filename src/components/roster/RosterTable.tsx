@@ -12,6 +12,7 @@ interface RosterTableProps {
 }
 
 const RosterTable: FC<RosterTableProps> = ({ month, roster, year }) => {
+  // TODO: Fix roster table margin/padding
   return (
     <Box
       id="roster-table"

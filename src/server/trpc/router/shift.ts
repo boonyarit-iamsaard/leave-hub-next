@@ -38,6 +38,7 @@ export const shiftRouter = router({
           },
         },
         include: {
+          // TODO: Exclude password
           user: true,
         },
       });

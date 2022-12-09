@@ -45,17 +45,18 @@ enum ShiftPriority {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  name         String
-  username     String        @unique
-  password     String
-  email        String        @unique
-  role         Role          @default(USER)
-  roster       Roster        @default(MECHANIC)
-  entitlements Entitlement[]
-  shifts       Shift[]
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
+  id             String           @id @default(cuid())
+  name           String
+  username       String           @unique
+  password       String
+  email          String           @unique
+  role           Role             @default(USER)
+  roster         Roster           @default(MECHANIC)
+  entitlements   Entitlement[]
+  shifts         Shift[]
+  rosterSequence RosterSequence[]
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -99,4 +100,17 @@ model PublicHoliday {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("public_holidays")
+}
+
+model RosterSequence {
+  id        String   @id @default(cuid())
+  year      Int
+  sequence  Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@index([userId])
+  @@map("roster_sequences")
 }

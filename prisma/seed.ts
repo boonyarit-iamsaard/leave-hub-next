@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 
 import entitlements from '../seed-data/entitlements.json';
 import publicHolidays from '../seed-data/public-holidays.json';
+import rosterSequence from '../seed-data/roster-sequence.json';
 import shifts from '../seed-data/shifts.json';
 import users from '../seed-data/users.json';
 
@@ -50,6 +51,9 @@ const main = async () => {
         end: new Date(end),
         amount: dayjs(end).diff(dayjs(start), 'day') + 1,
       }));
+    const userRosterSequence = rosterSequence
+      .filter(sequence => sequence.username === username)
+      .map(({ year, sequence }) => ({ year, sequence }));
 
     await prisma.user.upsert({
       where: { username: user.username },
@@ -66,6 +70,9 @@ const main = async () => {
         },
         shifts: {
           create: userShifts,
+        },
+        rosterSequence: {
+          create: userRosterSequence,
         },
       },
     });
