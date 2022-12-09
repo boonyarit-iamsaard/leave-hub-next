@@ -1,3 +1,4 @@
+import type { MantineTheme } from '@mantine/core';
 import type { Shift, User } from '@prisma/client';
 import { ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
@@ -100,5 +101,14 @@ export const transformRosterCellValue = (value: ShiftType | string) => {
       return 'X';
     default:
       return value;
+  }
+};
+
+export const assignColor = (value: ShiftType | string, theme: MantineTheme) => {
+  switch (value) {
+    case ShiftType.OFF:
+      return theme.colors.gray[5];
+    default:
+      return undefined;
   }
 };
