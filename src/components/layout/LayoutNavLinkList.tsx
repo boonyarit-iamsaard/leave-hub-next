@@ -20,11 +20,14 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
   const { pathname } = useRouter();
   const { data: sessionData } = useSession();
 
-  const currentYear = dayjs().year();
-  const currentMonth = dayjs().month() + 1;
-
   const getDefaultRosterPath = (roster: 'mechanic' | 'engineer') => {
-    return `/roster/${roster}/${currentYear}/${currentMonth}`;
+    const currentYear = dayjs().year();
+    const currentMonth = dayjs().month() + 1;
+
+    const year = currentYear < 2023 ? 2023 : currentYear;
+    const month = currentYear < 2023 ? 1 : currentMonth;
+
+    return `/roster/${roster}/${year}/${month}`;
   };
 
   return (
