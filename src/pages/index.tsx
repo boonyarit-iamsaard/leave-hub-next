@@ -108,17 +108,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
     };
   }
 
-  // TODO: Consider improving this
-  const { id, name, role } = session.user;
   return {
-    props: {
-      session: {
-        user: {
-          id,
-          name,
-          role,
-        },
-      },
-    },
+    props: {},
   };
 };
