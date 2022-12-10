@@ -1,8 +1,17 @@
 import { useEffect } from 'react';
 
-import { Button, Container, Flex, Select, Stack, Title } from '@mantine/core';
+import {
+  Button,
+  Container,
+  Flex,
+  Select,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
+import { openConfirmModal } from '@mantine/modals';
 import type { Shift } from '@prisma/client';
 import { Role, ShiftPriority, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
@@ -10,6 +19,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { showNotification } from '@mantine/notifications';
 import { sessionGuard } from '../../guards/session.guard';
 
 // TODO: Implement global config
@@ -52,9 +62,49 @@ const CreatePage: NextPage = () => {
     initialValues,
   });
 
-  const handleSubmin = async () => {
+  const handleSubmit = async () => {
     console.log(form.values);
+    showNotification({
+      color: 'green',
+      title: 'Success',
+      message: 'Created successfully',
+    });
   };
+
+  // TODO: Move to separate component
+  const handleConfirm = () =>
+    openConfirmModal({
+      title: 'Please confirm your information',
+      children: (
+        <Stack spacing="xs">
+          <Text>
+            <strong>Date: </strong>
+            {dayjs(form.values.start).format('DD MMMM YYYY')}
+          </Text>
+          <Text>
+            <strong>To: </strong>
+            {dayjs(form.values.end).format('DD MMMM YYYY')}
+          </Text>
+          <Text>
+            <strong>Duration: </strong>
+            {dayjs(form.values.end).diff(form.values.start, 'day') + 1} days
+          </Text>
+          <Text>
+            <strong>Type: </strong>
+            {form.values.type}
+          </Text>
+          <Text>
+            <strong>Priority: </strong>
+            {form.values.priority}
+          </Text>
+        </Stack>
+      ),
+      labels: {
+        confirm: 'Confirm',
+        cancel: 'Cancel',
+      },
+      onConfirm: handleSubmit,
+    });
 
   useEffect(() => {
     // TODO: Shorten this validation
@@ -79,7 +129,7 @@ const CreatePage: NextPage = () => {
       <Stack>
         <Title>Create</Title>
         {sessionData?.user && (
-          <form onSubmit={form.onSubmit(handleSubmin)}>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <Select
                 label="Type"
@@ -134,7 +184,7 @@ const CreatePage: NextPage = () => {
                 <Button variant="outline" color="red" onClick={router.back}>
                   Cancel
                 </Button>
-                <Button type="submit" variant="outline" color="blue">
+                <Button variant="outline" color="blue" onClick={handleConfirm}>
                   Create
                 </Button>
               </Flex>

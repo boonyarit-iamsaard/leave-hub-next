@@ -1,4 +1,6 @@
 import { MantineProvider } from '@mantine/core';
+import { ModalsProvider } from '@mantine/modals';
+import { NotificationsProvider } from '@mantine/notifications';
 import { type Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { type AppType } from 'next/app';
@@ -31,9 +33,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
         withNormalizeCSS
         theme={theme}
       >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <NotificationsProvider>
+          <ModalsProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ModalsProvider>
+        </NotificationsProvider>
       </MantineProvider>
     </SessionProvider>
   );
