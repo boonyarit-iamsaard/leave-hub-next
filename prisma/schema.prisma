@@ -50,6 +50,7 @@ model User {
   username       String           @unique
   password       String
   email          String           @unique
+  ern            String           @unique
   role           Role             @default(USER)
   roster         Roster           @default(MECHANIC)
   entitlements   Entitlement[]
