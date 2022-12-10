@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { Button, Container, Flex, Stack, Title } from '@mantine/core';
 import dayjs from 'dayjs';
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import { RosterTable } from '../../../../components/roster';
+import { getServerAuthSession } from '../../../../server/common/get-server-auth-session';
 
 const RosterPage: NextPage = () => {
   const { query, isReady, push } = useRouter();
@@ -93,3 +94,20 @@ const RosterPage: NextPage = () => {
 };
 
 export default RosterPage;
+
+export const getServerSideProps: GetServerSideProps = async context => {
+  const session = await getServerAuthSession(context);
+
+  if (!session || !session.user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+};
