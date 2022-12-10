@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, Container, Flex, Stack, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import type { GetServerSideProps, NextPage } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 import { RosterTable } from '../../../../components/roster';
@@ -59,15 +60,28 @@ const RosterPage: NextPage = () => {
   return (
     <Container size="lg" px={0}>
       <Stack>
-        <Title>
-          <span>
-            {routerReady && validQueries
-              ? roster.charAt(0).toUpperCase() + roster.slice(1)
-              : null}{' '}
-          </span>
-          <span>{fullMonthName} </span>
-          <span>{year}</span>
-        </Title>
+        <Flex justify="space-between" align="center">
+          <Title>
+            <span>
+              {routerReady && validQueries
+                ? roster.charAt(0).toUpperCase() + roster.slice(1)
+                : null}{' '}
+            </span>
+            <span>{fullMonthName} </span>
+            <span>{year}</span>
+          </Title>
+          <Button
+            href={{
+              pathname: '/roster/create',
+              query: { year, month },
+            }}
+            component={Link}
+            variant="light"
+            disabled={!routerReady && !validQueries}
+          >
+            <span>New</span>
+          </Button>
+        </Flex>
         <Flex justify="space-between">
           <Button
             variant="light"
