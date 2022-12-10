@@ -20,6 +20,7 @@
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --write .",
+    "typecheck:watch": "tsc --watch",
     "prepare": "husky install"
   },
   "dependencies": {
