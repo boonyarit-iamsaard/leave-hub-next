@@ -43,6 +43,36 @@ export const shiftRouter = router({
         },
       });
     }),
+
+  findManyByUser: protectedProcedure
+    .input(
+      z.object({
+        year: z.string(),
+        userId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.findMany({
+        where: {
+          user: {
+            id: input.userId,
+          },
+          status: {
+            not: ShiftStatus.REJECTED,
+          },
+          type: {
+            not: ShiftType.OFF,
+          },
+          start: {
+            gte: dayjs(`${input.year}-01-01`).toDate(),
+          },
+          end: {
+            lte: dayjs(`${input.year}-12-31`).toDate(),
+          },
+        },
+      });
+    }),
+
   create: protectedProcedure
     .input(
       z.object({

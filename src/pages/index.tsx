@@ -15,6 +15,7 @@ import type { GetServerSideProps } from 'next';
 import { type NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 
+import { DashboardShiftHistory } from '../components/dashboard';
 import { sessionGuard } from '../guards/session.guard';
 import { trpc } from '../utils/trpc';
 
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
   });
 
   const [entitlements, setEntitlements] = useState<Entitlement[]>([]);
-  const [year, setYear] = useState<string | null>(dayjs().year().toString());
+  const [year, setYear] = useState<string | null>('2023');
 
   const years = Array.from({ length: 7 }, (_, i) => dayjs().year() + i - 3);
 
@@ -40,7 +41,7 @@ const Home: NextPage = () => {
   }, [profile, year]);
 
   return (
-    <Container size="md" px={0}>
+    <Container size="lg" px={0}>
       <Stack>
         <Title>Dashboard</Title>
         <Select
@@ -87,8 +88,9 @@ const Home: NextPage = () => {
             </Grid.Col>
           )}
         </Grid>
-
-        <Title order={2}>History</Title>
+        {year && profile?.id && (
+          <DashboardShiftHistory year={year} userId={profile.id} />
+        )}
       </Stack>
     </Container>
   );
