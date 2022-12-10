@@ -38,6 +38,10 @@ const RosterPage: NextPage = () => {
       `/roster/${roster}/${previousMonth.year()}/${previousMonth.month() + 1}`
     );
   };
+  const handleClickSwitchRoster = () => {
+    const nextRoster = roster === 'mechanic' ? 'engineer' : 'mechanic';
+    push(`/roster/${nextRoster}/${year}/${month}`);
+  };
 
   useEffect(() => {
     if (!isReady || !validQueries) {
@@ -70,17 +74,27 @@ const RosterPage: NextPage = () => {
             <span>{fullMonthName} </span>
             <span>{year}</span>
           </Title>
-          <Button
-            href={{
-              pathname: '/roster/create',
-              query: { year, month },
-            }}
-            component={Link}
-            variant="light"
-            disabled={!routerReady && !validQueries}
-          >
-            <span>New</span>
-          </Button>
+          <Flex gap="md" align="center">
+            <Button
+              color="violet"
+              variant="light"
+              onClick={handleClickSwitchRoster}
+              disabled={!routerReady && !validQueries}
+            >
+              <span>{roster === 'engineer' ? 'Mechanic' : 'Engineer'}</span>
+            </Button>
+            <Button
+              href={{
+                pathname: '/roster/create',
+                query: { year, month },
+              }}
+              component={Link}
+              variant="light"
+              disabled={!routerReady && !validQueries}
+            >
+              <span>New</span>
+            </Button>
+          </Flex>
         </Flex>
         <Flex justify="space-between">
           <Button
