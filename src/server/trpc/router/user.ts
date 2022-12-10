@@ -47,8 +47,10 @@ export const userRouter = router({
           id: true,
           email: true,
           name: true,
+          username: true,
           role: true,
           roster: true,
+          entitlements: true,
         },
       });
     }),
