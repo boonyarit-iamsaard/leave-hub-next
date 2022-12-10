@@ -4,7 +4,10 @@ import {
   Button,
   Center,
   Container,
+  Flex,
+  Grid,
   Loader,
+  NumberInput,
   Select,
   Stack,
   Text,
@@ -18,6 +21,7 @@ import type { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import dayjs from 'dayjs';
 import { adminGuard } from '../../../guards/admin.guard';
 import { trpc } from '../../../utils/trpc';
 
@@ -127,9 +131,82 @@ const UserDetail = () => {
                   { value: Roster.MECHANIC, label: 'Mechanic' },
                 ]}
               />
-              <Button type="submit" color="blue">
-                Update
-              </Button>
+
+              <Text>Entitlements</Text>
+              {form.values.entitlements.length > 0 ? (
+                form.values.entitlements.map((entitlement, index) => (
+                  <Grid gutter="md" key={index}>
+                    <Grid.Col span={4}>
+                      <NumberInput
+                        label="Year"
+                        {...form.getInputProps(`entitlements.${index}.year`)}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      {/* TODO: Implement select input */}
+                      <TextInput
+                        label="Entitlement"
+                        {...form.getInputProps(`entitlements.${index}.name`)}
+                      />
+                    </Grid.Col>
+                    <Grid.Col span={4}>
+                      <NumberInput
+                        label="Amount"
+                        {...form.getInputProps(`entitlements.${index}.amount`)}
+                      />
+                    </Grid.Col>
+                    <Grid.Col>
+                      <Flex justify="flex-start" gap="md">
+                        <Button
+                          variant="light"
+                          color="blue"
+                          onClick={() =>
+                            form.insertListItem('entitlements', {
+                              year: dayjs().year(),
+                              name: '',
+                              amount: 0,
+                            })
+                          }
+                        >
+                          Add
+                        </Button>
+                        <Button
+                          variant="subtle"
+                          color="red"
+                          onClick={() =>
+                            form.removeListItem('entitlements', index)
+                          }
+                        >
+                          Remove
+                        </Button>
+                      </Flex>
+                    </Grid.Col>
+                  </Grid>
+                ))
+              ) : (
+                <Button
+                  color="blue"
+                  variant="outline"
+                  onClick={() =>
+                    form.insertListItem('entitlements', {
+                      year: dayjs().year(),
+                      name: '',
+                      amount: 0,
+                    })
+                  }
+                >
+                  Add Entitlement
+                </Button>
+              )}
+
+              <Flex justify="flex-end" gap="md">
+                <Button color="red" variant="outline" onClick={router.back}>
+                  Cancle
+                </Button>
+                <Button type="submit" color="blue">
+                  Update
+                </Button>
+              </Flex>
             </Stack>
           </form>
         </Stack>
