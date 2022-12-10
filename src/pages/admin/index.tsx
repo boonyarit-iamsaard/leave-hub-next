@@ -1,8 +1,17 @@
 import { useEffect, useState } from 'react';
 
-import { Container, Loader, Stack, Title } from '@mantine/core';
+import {
+  Container,
+  Flex,
+  Loader,
+  Stack,
+  TextInput,
+  Title,
+} from '@mantine/core';
+import { useDebouncedValue } from '@mantine/hooks';
 import type { Role, Roster } from '@prisma/client';
-import type { DataTableColumn } from 'mantine-datatable';
+import { sortBy } from 'lodash';
+import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 import { DataTable } from 'mantine-datatable';
 import type {
   GetServerSideProps,
@@ -10,8 +19,9 @@ import type {
   NextPage,
 } from 'next';
 import { useSession } from 'next-auth/react';
-
 import { useRouter } from 'next/router';
+import { MdSearch } from 'react-icons/md';
+
 import { adminGuard } from '../../guards/admin.guard';
 import { trpc } from '../../utils/trpc';
 
@@ -39,40 +49,92 @@ const AdminPage: NextPage<
 
   const [page, setPage] = useState(1);
   const [records, setRecords] = useState<UserRecord[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
+    columnAccessor: 'roster',
+    direction: 'asc',
+  });
+  const [debouncedSearchTerm] = useDebouncedValue(searchTerm, 200);
 
   const columns: DataTableColumn<UserRecord>[] = [
     {
       accessor: 'name',
+      sortable: true,
     },
     {
       accessor: 'roster',
       render: ({ roster }) => {
         return roster.charAt(0).toUpperCase() + roster.slice(1).toLowerCase();
       },
+      sortable: true,
     },
     {
       accessor: 'role',
       render: ({ role }) => {
         return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
       },
+      sortable: true,
     },
   ];
 
   useEffect(() => {
     if (users) {
-      setRecords(users.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
+      const records = sortBy(users, sortStatus.columnAccessor);
+      const filteredRecords = records.filter(
+        ({ email, name, roster, role }) => {
+          if (debouncedSearchTerm !== '') {
+            return (
+              email.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+              name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+              roster
+                .toLowerCase()
+                .includes(debouncedSearchTerm.toLowerCase()) ||
+              role.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+            );
+          }
+
+          return true;
+        }
+      );
+      const sortedRecords =
+        sortStatus.direction === 'asc'
+          ? filteredRecords
+          : filteredRecords.reverse();
+      const paginatedRecords = sortedRecords.slice(
+        (page - 1) * PAGE_SIZE,
+        page * PAGE_SIZE
+      );
+
+      setRecords(paginatedRecords);
     }
-  }, [page, users]);
+  }, [
+    debouncedSearchTerm,
+    page,
+    sortStatus.columnAccessor,
+    sortStatus.direction,
+    users,
+  ]);
 
   return (
     <Container size="md" px={0}>
       <Stack>
         <Title>Admin</Title>
+        <Flex justify="flex-end">
+          {/* TODO: Implement search term clearable */}
+          <TextInput
+            onChange={e => setSearchTerm(e.currentTarget.value)}
+            placeholder="Search by name, email, roster, or role"
+            icon={<MdSearch />}
+            value={searchTerm}
+            sx={{ flexGrow: 1 }}
+          />
+        </Flex>
         {loading ? (
           <Loader variant="dots" sx={{ marginInline: 'auto' }} />
         ) : (
           <DataTable
             columns={columns}
+            mih={records.length === 0 ? 160 : undefined}
             onPageChange={p => setPage(p)}
             onRowClick={({ id }) =>
               router.push({
@@ -80,9 +142,11 @@ const AdminPage: NextPage<
                 query: { id },
               })
             }
+            onSortStatusChange={setSortStatus}
             page={page}
             records={records}
             recordsPerPage={PAGE_SIZE}
+            sortStatus={sortStatus}
             striped
             totalRecords={users?.length ?? 0}
             withBorder
