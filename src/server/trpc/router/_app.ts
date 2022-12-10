@@ -1,5 +1,6 @@
 import { router } from '../trpc';
 import { authRouter } from './auth';
+import { entitlementRouter } from './entitlement';
 import { exampleRouter } from './example';
 import { publicHolidayRouter } from './public-holiday';
 import { shiftRouter } from './shift';
@@ -11,6 +12,7 @@ export const appRouter = router({
   example: exampleRouter,
   publicHoliday: publicHolidayRouter,
   shift: shiftRouter,
+  entitlement: entitlementRouter,
 });
 
 // export type definition of API

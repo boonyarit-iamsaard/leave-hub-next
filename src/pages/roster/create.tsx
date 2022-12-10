@@ -61,7 +61,7 @@ const CreatePage: NextPage = () => {
   const form = useForm({
     initialValues,
   });
-  const mutation = trpc.shift.create.useMutation({
+  const createShiftMutation = trpc.shift.create.useMutation({
     async onSuccess() {
       showNotification({
         color: 'green',
@@ -76,7 +76,7 @@ const CreatePage: NextPage = () => {
   });
 
   const handleSubmit = async () => {
-    await mutation.mutateAsync({
+    await createShiftMutation.mutateAsync({
       // TODO: Refactor date sending to backend as database is in UTC
       start: dayjs(form.values.start).add(7, 'hours').toDate(),
       end: dayjs(form.values.end).add(7, 'hours').toDate(),

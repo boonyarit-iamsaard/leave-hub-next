@@ -1,7 +1,7 @@
-import { Roster } from '@prisma/client';
+import { Role, Roster } from '@prisma/client';
 import { z } from 'zod';
 
-import { protectedProcedure, router } from '../trpc';
+import { adminProcedure, protectedProcedure, router } from '../trpc';
 
 export const userRouter = router({
   findAll: protectedProcedure.query(async ({ ctx }) => {
@@ -69,4 +69,29 @@ export const userRouter = router({
       },
     });
   }),
+  update: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        username: z.string(),
+        email: z.string(),
+        role: z.nativeEnum(Role),
+        roster: z.nativeEnum(Roster),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.user.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          username: input.username,
+          name: input.name,
+          email: input.email,
+          role: input.role,
+          roster: input.roster,
+        },
+      });
+    }),
 });

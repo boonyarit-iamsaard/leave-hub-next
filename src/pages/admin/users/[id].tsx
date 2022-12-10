@@ -15,14 +15,13 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
 import type { Entitlement, User } from '@prisma/client';
 import { Role, Roster } from '@prisma/client';
-import type { GetServerSideProps } from 'next';
+import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-import dayjs from 'dayjs';
-import { adminGuard } from '../../../guards/admin.guard';
 import { trpc } from '../../../utils/trpc';
 
 const initialValues: Pick<
@@ -39,6 +38,13 @@ const initialValues: Pick<
   entitlements: [],
 };
 
+const onSuccessNotification = (message?: string) =>
+  showNotification({
+    color: 'green',
+    title: 'Success',
+    message: message ? message : 'User information updated successfully',
+  });
+
 const UserDetail = () => {
   const router = useRouter();
   // TODO: Improve this type assertion
@@ -53,9 +59,73 @@ const UserDetail = () => {
   const form = useForm({
     initialValues,
   });
+  const userUpdateMutation = trpc.user.update.useMutation({
+    async onSuccess() {
+      onSuccessNotification();
+    },
+  });
+  const entitlementUpdateMutation = trpc.entitlement.update.useMutation({
+    async onSuccess() {
+      onSuccessNotification();
+    },
+  });
+  const entitlementCreateMutation = trpc.entitlement.create.useMutation({
+    async onSuccess() {
+      onSuccessNotification();
+    },
+  });
+  const entitlementDeleteMutation = trpc.entitlement.delete.useMutation({
+    async onSuccess() {
+      onSuccessNotification('Entitlement deleted successfully');
+    },
+  });
 
-  const handleSubmin = async () => {
-    console.log(form.values);
+  const handleDeleteEntitlement = async (index: number) => {
+    const entitlement = form.values.entitlements[index];
+
+    if (!entitlement?.id) {
+      form.removeListItem('entitlements', index);
+      return;
+    } else {
+      await entitlementDeleteMutation.mutateAsync({ id: entitlement.id });
+      form.removeListItem('entitlements', index);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!userData) return;
+
+    await userUpdateMutation.mutateAsync({
+      id: userData.id,
+      name: form.values.name,
+      username: form.values.username,
+      email: form.values.email,
+      role: form.values.role,
+      roster: form.values.roster,
+    });
+
+    await Promise.all(
+      form.values.entitlements.map(entitlement => {
+        if (entitlement.id) {
+          entitlementUpdateMutation.mutateAsync({
+            id: entitlement.id,
+            year: entitlement.year,
+            name: entitlement.name,
+            amount: entitlement.amount,
+          });
+        } else {
+          entitlementCreateMutation.mutateAsync({
+            year: entitlement.year,
+            name: entitlement.name,
+            amount: entitlement.amount,
+            userId: userData.id,
+          });
+        }
+      })
+    );
+
+    form.reset();
+    router.back();
   };
 
   useEffect(() => {
@@ -82,7 +152,7 @@ const UserDetail = () => {
       ) : userData ? (
         <Stack>
           <Title order={1}>{userData.name}</Title>
-          <form onSubmit={form.onSubmit(handleSubmin)}>
+          <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <Text>User Information</Text>
               <TextInput
@@ -158,27 +228,28 @@ const UserDetail = () => {
                     <Grid.Col>
                       <Flex justify="flex-start" gap="md">
                         <Button
-                          variant="light"
-                          color="blue"
-                          onClick={() =>
-                            form.insertListItem('entitlements', {
-                              year: dayjs().year(),
-                              name: '',
-                              amount: 0,
-                            })
-                          }
-                        >
-                          Add
-                        </Button>
-                        <Button
                           variant="subtle"
                           color="red"
-                          onClick={() =>
-                            form.removeListItem('entitlements', index)
-                          }
+                          onClick={() => handleDeleteEntitlement(index)}
                         >
                           Remove
                         </Button>
+                        {index === form.values.entitlements.length - 1 && (
+                          <Button
+                            variant="light"
+                            color="blue"
+                            onClick={() =>
+                              form.insertListItem('entitlements', {
+                                year: dayjs().year(),
+                                name: '',
+                                amount: 0,
+                                userId: userData.id,
+                              })
+                            }
+                          >
+                            Add
+                          </Button>
+                        )}
                       </Flex>
                     </Grid.Col>
                   </Grid>
@@ -192,6 +263,7 @@ const UserDetail = () => {
                       year: dayjs().year(),
                       name: '',
                       amount: 0,
+                      userId: userData.id,
                     })
                   }
                 >
@@ -219,9 +291,3 @@ const UserDetail = () => {
 };
 
 export default UserDetail;
-
-// TODO: Fix eslint warning
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const getServerSideProps: GetServerSideProps = adminGuard(async ctx => ({
-  props: {},
-}));
