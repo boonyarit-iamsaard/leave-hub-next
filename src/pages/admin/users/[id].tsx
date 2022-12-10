@@ -15,13 +15,17 @@ import {
   Title,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import type { Entitlement, User } from '@prisma/client';
 import { Role, Roster } from '@prisma/client';
+import { TRPCClientError } from '@trpc/client';
 import dayjs from 'dayjs';
+import type { GetServerSideProps } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { adminGuard } from '../../../guards/admin.guard';
 import { trpc } from '../../../utils/trpc';
 
 const initialValues: Pick<
@@ -79,6 +83,11 @@ const UserDetail = () => {
       onSuccessNotification('Entitlement deleted successfully');
     },
   });
+  const resetPasswordMutation = trpc.user.resetPassword.useMutation({
+    async onSuccess() {
+      onSuccessNotification('Password reset successfully');
+    },
+  });
 
   const handleDeleteEntitlement = async (index: number) => {
     const entitlement = form.values.entitlements[index];
@@ -89,6 +98,39 @@ const UserDetail = () => {
     } else {
       await entitlementDeleteMutation.mutateAsync({ id: entitlement.id });
       form.removeListItem('entitlements', index);
+    }
+  };
+
+  const handleClickResetPassword = async (userId: string) => {
+    openConfirmModal({
+      title: 'Reset Password',
+      children: (
+        <Text>Are you sure you want to reset the password for this user?</Text>
+      ),
+      labels: {
+        confirm: 'Reset Password',
+        cancel: 'Cancel',
+      },
+      color: 'red',
+      onConfirm: () => handleResetPassword(userId),
+    });
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    try {
+      await resetPasswordMutation.mutateAsync({ userId });
+    } catch (error) {
+      const message =
+        error instanceof TRPCClientError
+          ? error.message
+          : 'Something went wrong';
+
+      showNotification({
+        title: 'Error',
+        color: 'red',
+        autoClose: 5000,
+        message,
+      });
     }
   };
 
@@ -151,7 +193,18 @@ const UserDetail = () => {
         </Center>
       ) : userData ? (
         <Stack>
-          <Title order={1}>{userData.name}</Title>
+          <Flex justify="space-between" align="center">
+            <Title order={1} size="h2">
+              {userData.name}
+            </Title>
+            <Button
+              variant="subtle"
+              color="red"
+              onClick={() => handleClickResetPassword(userData.id)}
+            >
+              Reset Password
+            </Button>
+          </Flex>
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <Text>User Information</Text>
@@ -291,3 +344,9 @@ const UserDetail = () => {
 };
 
 export default UserDetail;
+
+// TODO: Fix eslint warning
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getServerSideProps: GetServerSideProps = adminGuard(async ctx => ({
+  props: {},
+}));

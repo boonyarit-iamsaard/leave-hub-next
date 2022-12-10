@@ -134,4 +134,34 @@ export const userRouter = router({
         },
       });
     }),
+  resetPassword: adminProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+        select: {
+          password: true,
+          ern: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      return await ctx.prisma.user.update({
+        where: {
+          id: input.userId,
+        },
+        data: {
+          password: await hash(user.ern),
+        },
+      });
+    }),
 });
