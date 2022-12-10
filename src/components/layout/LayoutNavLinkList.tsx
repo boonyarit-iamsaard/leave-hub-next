@@ -58,6 +58,15 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
           onClick={() => setOpen(false)}
         />
       </NavLink>
+      {/* /change-password */}
+      <NavLink
+        active={pathname.includes('/change-password')}
+        component={Link}
+        href="/change-password"
+        icon={<MdOutlineManageAccounts size={16} />}
+        label="Change Password"
+        onClick={() => setOpen(false)}
+      />
       {sessionData?.user?.role === Role.ADMIN && (
         <NavLink
           active={pathname.includes('/admin')}

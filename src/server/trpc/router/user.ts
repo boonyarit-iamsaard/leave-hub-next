@@ -1,4 +1,5 @@
 import { Role, Roster } from '@prisma/client';
+import { hash, verify } from 'argon2';
 import { z } from 'zod';
 
 import { adminProcedure, protectedProcedure, router } from '../trpc';
@@ -91,6 +92,45 @@ export const userRouter = router({
           email: input.email,
           role: input.role,
           roster: input.roster,
+        },
+      });
+    }),
+  changePassword: protectedProcedure
+    .input(
+      z.object({
+        currentPassword: z.string(),
+        newPassword: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          password: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const isCurrentPasswordValid = await verify(
+        user.password,
+        input.currentPassword
+      );
+
+      if (!isCurrentPasswordValid) {
+        throw new Error('Current password is incorrect');
+      }
+
+      return await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          password: await hash(input.newPassword),
         },
       });
     }),
