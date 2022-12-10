@@ -2,8 +2,8 @@ import type { FC, ReactNode } from 'react';
 import { useState } from 'react';
 
 import { AppShell, useMantineTheme } from '@mantine/core';
-import { useSession } from 'next-auth/react';
 
+import { useRouter } from 'next/router';
 import LayoutHeader from './LayoutHeader';
 import LayoutNavbar from './LayoutNavbar';
 
@@ -13,8 +13,8 @@ interface LayoutProps {
 
 const Layout: FC<LayoutProps> = ({ children }) => {
   const theme = useMantineTheme();
+  const { pathname } = useRouter();
   const [open, setOpen] = useState<boolean>(false);
-  const { data: sessionData } = useSession();
 
   return (
     <AppShell
@@ -28,15 +28,16 @@ const Layout: FC<LayoutProps> = ({ children }) => {
       }}
       navbarOffsetBreakpoint="md"
       navbar={
-        sessionData?.user && <LayoutNavbar open={open} setOpen={setOpen} />
+        pathname !== '/login' ? (
+          <LayoutNavbar open={open} setOpen={setOpen} />
+        ) : undefined
       }
       header={
-        sessionData?.user && (
+        pathname !== '/login' ? (
           <LayoutHeader open={open} setOpen={setOpen} theme={theme} />
-        )
+        ) : undefined
       }
     >
-      {/* TODO: Fix layout shift caused by header */}
       {children}
     </AppShell>
   );

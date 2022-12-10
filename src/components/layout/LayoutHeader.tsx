@@ -39,21 +39,21 @@ const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
           </MediaQuery>
           <Text fw="bold">Leave Hub | Bangkok Engineering</Text>
         </Flex>
-        <Flex
-          gap="md"
-          justify="flex-end"
-          align="center"
-          style={{ flexGrow: 1 }}
-        >
-          {sessionData && (
+        {sessionData?.user && (
+          <Flex
+            gap="md"
+            justify="flex-end"
+            align="center"
+            style={{ flexGrow: 1 }}
+          >
             <Avatar color="blue" radius="xl">
-              {sessionData.user?.name?.charAt(0).toUpperCase()}
+              {sessionData.user.name?.charAt(0).toUpperCase()}
             </Avatar>
-          )}
-          <Button onClick={handSignOut} variant="subtle">
-            Sign out
-          </Button>
-        </Flex>
+            <Button onClick={handSignOut} variant="subtle">
+              Sign out
+            </Button>
+          </Flex>
+        )}
       </div>
     </Header>
   );
