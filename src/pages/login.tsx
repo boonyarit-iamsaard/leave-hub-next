@@ -11,6 +11,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
 import { signIn } from 'next-auth/react';
 
 const LoginPage: FC<PaperProps> = props => {
@@ -21,11 +22,26 @@ const LoginPage: FC<PaperProps> = props => {
 
   const handleLogin = async () => {
     const { username, password } = form.values;
-    await signIn('credentials', {
-      username,
-      password,
-      callbackUrl: '/',
-    });
+    try {
+      const response = await signIn('credentials', {
+        username,
+        password,
+        redirect: false,
+      });
+      if (response?.error) {
+        throw new Error(response.error);
+      }
+      if (response?.ok) {
+        window.location.href = '/';
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      showNotification({
+        title: 'Login failed',
+        message: message,
+        color: 'red',
+      });
+    }
   };
 
   return (

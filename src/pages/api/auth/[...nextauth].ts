@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         // TODO: Validate credentials using zod
         if (!credentials?.username || !credentials?.password) {
-          return null;
+          throw new Error('Invalid credentials');
         }
 
         const user = await prisma.user.findUnique({
@@ -45,12 +45,12 @@ export const authOptions: NextAuthOptions = {
           },
         });
         if (!user) {
-          return null;
+          throw new Error('Invalid credentials');
         }
 
         const isValid = await verify(user.password, credentials.password);
         if (!isValid) {
-          return null;
+          throw new Error('Invalid credentials');
         }
 
         return {
