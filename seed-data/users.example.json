@@ -1,10 +1,11 @@
 [
   {
-    "name": "",
-    "username": "",
-    "password": "",
     "email": "",
-    "role": "USER",
-    "roster": "MECHANIC"
+    "password": "",
+    "ern": "",
+    "username": "",
+    "name": "",
+    "roster": "MECHANIC",
+    "role": "USER"
   }
 ]

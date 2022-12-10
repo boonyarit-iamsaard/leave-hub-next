@@ -33,7 +33,7 @@ const main = async () => {
       console.log(`Public holiday ${name} created successfully ✅`);
     });
     users.forEach(async user => {
-      const { name, username, password, email, role, roster } = user;
+      const { name, username, password, email, role, roster, ern } = user;
 
       const hashedPassword = await hash(password);
       const userRole = role === 'ADMIN' ? Role.ADMIN : Role.USER;
@@ -63,6 +63,7 @@ const main = async () => {
           name,
           username,
           email,
+          ern,
           role: userRole,
           roster: userRoster,
           password: hashedPassword,
