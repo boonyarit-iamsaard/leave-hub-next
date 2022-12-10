@@ -12,15 +12,15 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
 import type { Shift } from '@prisma/client';
 import { Role, ShiftPriority, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
-import type { GetServerSideProps, NextPage } from 'next';
+import type { NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
-import { showNotification } from '@mantine/notifications';
-import { sessionGuard } from '../../guards/session.guard';
+import { trpc } from '../../utils/trpc';
 
 // TODO: Implement global config
 const configs: { phase: 'A' | 'B' } = {
@@ -61,13 +61,28 @@ const CreatePage: NextPage = () => {
   const form = useForm({
     initialValues,
   });
+  const mutation = trpc.shift.create.useMutation({
+    async onSuccess() {
+      showNotification({
+        color: 'green',
+        title: 'Success',
+        message: 'Created successfully',
+      });
+
+      form.reset();
+      router.back();
+    },
+    // TODO: Handle error
+  });
 
   const handleSubmit = async () => {
-    console.log(form.values);
-    showNotification({
-      color: 'green',
-      title: 'Success',
-      message: 'Created successfully',
+    await mutation.mutateAsync({
+      // TODO: Refactor date sending to backend as database is in UTC
+      start: dayjs(form.values.start).add(7, 'hours').toDate(),
+      end: dayjs(form.values.end).add(7, 'hours').toDate(),
+      amount: dayjs(form.values.end).diff(form.values.start, 'day') + 1,
+      type: form.values.type,
+      priority: form.values.priority,
     });
   };
 
@@ -197,9 +212,3 @@ const CreatePage: NextPage = () => {
 };
 
 export default CreatePage;
-
-export const getServerSideProps: GetServerSideProps = sessionGuard(
-  // TODO: Fix eslint warning
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async ctx => ({ props: {} })
-);

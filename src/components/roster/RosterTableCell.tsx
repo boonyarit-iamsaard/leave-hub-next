@@ -10,6 +10,8 @@ const assignColor = (value: ShiftType | string, theme: MantineTheme) => {
   switch (value) {
     case ShiftType.OFF:
       return theme.colors.gray[5];
+    case ShiftType.LEAVE:
+      return theme.colors.yellow[5];
     default:
       return undefined;
   }

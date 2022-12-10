@@ -1,4 +1,4 @@
-import { Roster, ShiftStatus } from '@prisma/client';
+import { Roster, ShiftPriority, ShiftStatus, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
@@ -40,6 +40,32 @@ export const shiftRouter = router({
         include: {
           // TODO: Exclude password
           user: true,
+        },
+      });
+    }),
+  create: protectedProcedure
+    .input(
+      z.object({
+        start: z.date(),
+        end: z.date(),
+        type: z.nativeEnum(ShiftType),
+        priority: z.nativeEnum(ShiftPriority),
+        status: z.nativeEnum(ShiftStatus).default(ShiftStatus.PENDING),
+        amount: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.create({
+        data: {
+          start: input.start,
+          end: input.end,
+          status: input.status,
+          amount: input.amount,
+          user: {
+            connect: {
+              id: ctx.session.user.id,
+            },
+          },
         },
       });
     }),
