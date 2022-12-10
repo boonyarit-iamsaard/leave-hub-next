@@ -6,7 +6,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import { RosterTable } from '../../../../components/roster';
-import { getServerAuthSession } from '../../../../server/common/get-server-auth-session';
+import { sessionGuard } from '../../../../guards/session.guard';
 
 const RosterPage: NextPage = () => {
   const { query, isReady, push } = useRouter();
@@ -95,19 +95,8 @@ const RosterPage: NextPage = () => {
 
 export default RosterPage;
 
-export const getServerSideProps: GetServerSideProps = async context => {
-  const session = await getServerAuthSession(context);
-
-  if (!session || !session.user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps: GetServerSideProps = sessionGuard(
+  // TODO: Fix eslint warning
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async ctx => ({ props: {} })
+);

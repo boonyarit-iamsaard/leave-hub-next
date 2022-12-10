@@ -15,7 +15,7 @@ import type { GetServerSideProps } from 'next';
 import { type NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 
-import { getServerAuthSession } from '../server/common/get-server-auth-session';
+import { sessionGuard } from '../guards/session.guard';
 import { trpc } from '../utils/trpc';
 
 const Home: NextPage = () => {
@@ -96,19 +96,8 @@ const Home: NextPage = () => {
 
 export default Home;
 
-export const getServerSideProps: GetServerSideProps = async context => {
-  const session = await getServerAuthSession(context);
-
-  if (!session || !session.user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps: GetServerSideProps = sessionGuard(
+  // TODO: Fix eslint warning
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async ctx => ({ props: {} })
+);

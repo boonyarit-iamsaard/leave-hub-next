@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Container, Loader, Stack, Title } from '@mantine/core';
-import type { Roster } from '@prisma/client';
-import { Role } from '@prisma/client';
+import type { Role, Roster } from '@prisma/client';
 import type { DataTableColumn } from 'mantine-datatable';
 import { DataTable } from 'mantine-datatable';
 import type {
@@ -13,7 +12,7 @@ import type {
 import { useSession } from 'next-auth/react';
 
 import { useRouter } from 'next/router';
-import { getServerAuthSession } from '../../server/common/get-server-auth-session';
+import { adminGuard } from '../../guards/admin.guard';
 import { trpc } from '../../utils/trpc';
 
 interface UserRecord {
@@ -96,28 +95,8 @@ const AdminPage: NextPage<
 
 export default AdminPage;
 
-export const getServerSideProps: GetServerSideProps = async context => {
-  const session = await getServerAuthSession(context);
-
-  if (!session || !session.user) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  if (session.user.role !== Role.ADMIN) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-};
+// TODO: Fix eslint warning
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const getServerSideProps: GetServerSideProps = adminGuard(async ctx => ({
+  props: {},
+}));
