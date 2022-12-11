@@ -90,6 +90,8 @@ export const shiftRouter = router({
           start: input.start,
           end: input.end,
           status: input.status,
+          type: input.type,
+          priority: input.priority,
           amount: input.amount,
           user: {
             connect: {
@@ -98,5 +100,42 @@ export const shiftRouter = router({
           },
         },
       });
+    }),
+
+  getUsageSummary: protectedProcedure
+    .input(
+      z.object({
+        year: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const groupByPriority = await ctx.prisma.shift.groupBy({
+        by: ['priority', 'type'],
+        where: {
+          user: {
+            id: ctx.session.user.id,
+          },
+          start: {
+            gte: dayjs(`${input.year}-01-01`).toDate(),
+          },
+          end: {
+            lte: dayjs(`${input.year}-12-31`).toDate(),
+          },
+          status: {
+            not: ShiftStatus.REJECTED,
+          },
+          type: {
+            not: ShiftType.OFF,
+          },
+        },
+        _count: {
+          priority: true,
+        },
+        _sum: {
+          amount: true,
+        },
+      });
+
+      return groupByPriority;
     }),
 });

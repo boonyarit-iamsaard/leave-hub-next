@@ -22,6 +22,7 @@ import { useRouter } from 'next/router';
 
 import { PHASE } from '../../constants/constants';
 import { sessionGuard } from '../../guards/session.guard';
+import { useProfileSummary } from '../../hooks/use-profile-summary';
 import { trpc } from '../../utils/trpc';
 
 const initialValues: Pick<Shift, 'start' | 'end' | 'type' | 'priority'> = {
@@ -38,15 +39,38 @@ const shiftTypeOptions = (role: Role) =>
     disabled: role === Role.USER && type === ShiftType.OFF,
   }));
 
-const shiftPriorityOptions = (phase: typeof PHASE, type: ShiftType) =>
-  Object.values(ShiftPriority).map(priority => ({
-    label: priority,
-    value: priority,
-    disabled:
+const shiftPriorityOptions = (
+  phase: 'A' | 'B',
+  type: ShiftType,
+  hasANL1 = false,
+  hasANL2 = false
+) => {
+  return Object.values(ShiftPriority).map(priority => {
+    // 👇 The following conditions are used to disable the options
+    const normalLeaveOnPhaseA =
       phase === 'A' &&
-      priority === ShiftPriority.NORMAL &&
-      type === ShiftType.LEAVE,
-  }));
+      type === ShiftType.LEAVE &&
+      priority === ShiftPriority.NORMAL;
+    const normalLeaveOnPhaseB =
+      phase === 'B' &&
+      type === ShiftType.LEAVE &&
+      priority !== ShiftPriority.NORMAL;
+    const hasANL1Used =
+      type === ShiftType.LEAVE && priority === ShiftPriority.ANL1 && hasANL1;
+    const hasANL2Used =
+      type === ShiftType.LEAVE && priority === ShiftPriority.ANL2 && hasANL2;
+
+    return {
+      label: priority,
+      value: priority,
+      disabled:
+        normalLeaveOnPhaseA ||
+        normalLeaveOnPhaseB ||
+        hasANL1Used ||
+        hasANL2Used,
+    };
+  });
+};
 
 const CreatePage: NextPage = () => {
   const defaultPriority =
@@ -55,25 +79,26 @@ const CreatePage: NextPage = () => {
   const router = useRouter();
   const { year, month } = router.query;
   const { data: sessionData } = useSession();
+  const { hasANL1, hasANL2, loadingSummary } = useProfileSummary(
+    // TODO: Improve type assertion
+    year as string
+  );
+
+  const [shouldDisable, setShouldDisable] = useState<boolean>(false);
 
   const form = useForm({
     initialValues,
   });
+
   const createShiftMutation = trpc.shift.create.useMutation({
     async onSuccess() {
       showNotification({
-        color: 'green',
+        color: 'company-primary',
         title: 'Success',
         message: 'Created successfully',
       });
-
-      form.reset();
-      router.back();
     },
-    // TODO: Handle error
   });
-
-  const [shouldDisable, setShouldDisable] = useState<boolean>(false);
 
   const handleShiftTypeChange = (value: string | null) => {
     if (value) {
@@ -100,6 +125,9 @@ const CreatePage: NextPage = () => {
       type: form.values.type,
       priority: form.values.priority,
     });
+
+    form.reset();
+    router.back();
   };
 
   // TODO: Move to separate component
@@ -155,13 +183,11 @@ const CreatePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [month, router.isReady, year]);
 
-  console.log('shoule disabled -> ', shouldDisable);
-
   return (
     <Container size="xs">
       <Stack>
         <Title>Create</Title>
-        {sessionData?.user && (
+        {sessionData?.user && !loadingSummary && (
           <form onSubmit={form.onSubmit(handleSubmit)}>
             <Stack>
               <Select
@@ -176,7 +202,12 @@ const CreatePage: NextPage = () => {
                 placeholder="Select priority"
                 disabled={shouldDisable}
                 value={form.values.priority}
-                data={shiftPriorityOptions(PHASE, form.values.type)}
+                data={shiftPriorityOptions(
+                  PHASE,
+                  form.values.type,
+                  hasANL1,
+                  hasANL2
+                )}
                 onChange={priority =>
                   form.setFieldValue(
                     'priority',
