@@ -55,23 +55,14 @@ const DashboardShiftHistory: FC<DashboardShiftHistoryProps> = ({
     {
       accessor: 'type',
       sortable: true,
-      render: records =>
-        records.type.charAt(0).toUpperCase() +
-        records.type.slice(1).toLowerCase(),
     },
     {
       accessor: 'priority',
       sortable: true,
-      render: records =>
-        records.priority.charAt(0).toUpperCase() +
-        records.priority.slice(1).toLowerCase(),
     },
     {
       accessor: 'status',
       sortable: true,
-      render: records =>
-        records.status.charAt(0).toUpperCase() +
-        records.status.slice(1).toLowerCase(),
     },
   ];
 

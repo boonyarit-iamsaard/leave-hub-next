@@ -1,7 +1,8 @@
-import type { Entitlement, ShiftType } from '@prisma/client';
-import { ShiftPriority } from '@prisma/client';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+
+import type { Entitlement } from '@prisma/client';
+import { ShiftPriority, ShiftType } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 import { trpc } from '../utils/trpc';
 
@@ -26,6 +27,7 @@ export const useProfileSummary = (year: string) => {
     });
 
   const [entitlements, setEntitlements] = useState<Entitlement[]>([]);
+  const [used, setUsed] = useState<number>(0);
   const [summary, setSummary] = useState<ProfileSummary[]>([]);
   const [hasANL1, setHasANL1] = useState<boolean>(false);
   const [hasANL2, setHasANL2] = useState<boolean>(false);
@@ -45,10 +47,14 @@ export const useProfileSummary = (year: string) => {
       const hasANL2 = serializedSummary.some(
         item => item.priority === ShiftPriority.ANL2 && item.count > 0
       );
+      const used = serializedSummary
+        .filter(item => item.type === ShiftType.LEAVE)
+        .reduce((acc, item) => acc + item.sum, 0);
 
       setSummary(serializedSummary);
       setHasANL1(hasANL1);
       setHasANL2(hasANL2);
+      setUsed(used);
     }
   }, [summaryData]);
 
@@ -69,5 +75,6 @@ export const useProfileSummary = (year: string) => {
     loadingProfile,
     loadingSummary,
     summary,
+    used,
   };
 };
