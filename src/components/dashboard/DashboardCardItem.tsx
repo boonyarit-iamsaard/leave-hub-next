@@ -22,7 +22,7 @@ const DashboardCardItem: FC<CardItemProps> = ({
       </Title>
       <Text ta="center">
         {value}
-        {percentage && <span> ({percentage}%)</span>}
+        {percentage && <span> ({percentage.toFixed(2)}%)</span>}
       </Text>
       {!disabledSuffix && (
         <Text c="dimmed" fz="sm" ta="center">

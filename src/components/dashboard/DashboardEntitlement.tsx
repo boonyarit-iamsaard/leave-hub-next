@@ -38,7 +38,9 @@ const DashboardEntitlement: FC<DashboardEntitlementsProps> = ({
               <DashboardCardItem
                 title="Used"
                 value={used}
-                percentage={(used / amount) * 100}
+                percentage={
+                  (used / amount) * 100 <= 0 ? undefined : (used / amount) * 100
+                }
               />
               <DashboardCardItem title="Remains" value={amount - used} />
             </Card>
