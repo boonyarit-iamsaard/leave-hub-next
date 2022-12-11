@@ -1,16 +1,10 @@
 import type { Dispatch, FC, SetStateAction } from 'react';
 
 import type { MantineTheme } from '@mantine/core';
-import {
-  Avatar,
-  Burger,
-  Button,
-  Flex,
-  Header,
-  MediaQuery,
-  Text,
-} from '@mantine/core';
+import { Burger, Button, Flex, Header, MediaQuery, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 interface LayoutHeaderProps {
   open: boolean;
@@ -20,6 +14,7 @@ interface LayoutHeaderProps {
 
 const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
   const { data: sessionData } = useSession();
+  const matches = useMediaQuery('(min-width: 992px)');
 
   const handSignOut = async () => {
     await signOut();
@@ -37,7 +32,19 @@ const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
               color={theme.colors.gray[6]}
             />
           </MediaQuery>
-          <Text fw="bold">Leave Hub | Bangkok Engineering</Text>
+
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt="Logo"
+            src="/logo.png"
+            style={{
+              height: 32,
+              aspectRatio: 'auto',
+            }}
+          />
+          <Text href="/" component={Link} fw="bold">
+            {matches ? 'Leave Hub - Bangkok Engineering' : 'Leave Hub'}
+          </Text>
         </Flex>
         {sessionData?.user && (
           <Flex
@@ -46,10 +53,12 @@ const LayoutHeader: FC<LayoutHeaderProps> = ({ open, setOpen, theme }) => {
             align="center"
             style={{ flexGrow: 1 }}
           >
-            <Avatar color="blue" radius="xl">
-              {sessionData.user.name?.charAt(0).toUpperCase()}
-            </Avatar>
-            <Button onClick={handSignOut} variant="subtle">
+            {matches && <Text>{sessionData.user.name}</Text>}
+            <Button
+              color="company-secondary"
+              onClick={handSignOut}
+              variant="outline"
+            >
               Sign out
             </Button>
           </Flex>
