@@ -127,7 +127,7 @@ const UserDetail = () => {
 
       showNotification({
         title: 'Error',
-        color: 'red',
+        color: 'company-error',
         autoClose: 5000,
         message,
       });

@@ -1,6 +1,6 @@
 import type { MantineTheme } from '@mantine/core';
 import type { Shift, User } from '@prisma/client';
-import { ShiftType } from '@prisma/client';
+import { ShiftPriority, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
 
 import type { ShiftRow } from '../types/roster';
@@ -52,7 +52,10 @@ export const populateRosterBodyRows = (
   const daysInMonth = dayjs(`${year}-${month}-01`).daysInMonth();
 
   return titles.map(title => {
-    const dates: (Pick<ShiftRow['shifts'][number], 'type' | 'status'> & {
+    const dates: (Pick<
+      ShiftRow['shifts'][number],
+      'type' | 'status' | 'priority'
+    > & {
       date: Date;
     })[] = [];
     const shifts = shiftData.filter(shift => shift.user.id === title.id);
@@ -66,6 +69,7 @@ export const populateRosterBodyRows = (
         dates.push({
           type: shift.type,
           status: shift.status,
+          priority: shift.priority,
           date: start,
         });
       }
@@ -76,26 +80,34 @@ export const populateRosterBodyRows = (
       return dateInMonth === `${year}-${month}`;
     });
 
-    const mappedDates: Pick<ShiftRow['shifts'][number], 'type' | 'status'>[] =
-      Array.from(Array(daysInMonth).keys()).map(day => {
-        const date = dayjs(`${year}-${month}-${day + 1}`).toDate();
-        const shift = filteredDates.find(shift =>
-          dayjs(shift.date).isSame(date, 'day')
-        );
-        return shift
-          ? { type: shift.type, status: shift.status }
-          : { type: '', status: '' };
-      });
+    const mappedDates: Pick<
+      ShiftRow['shifts'][number],
+      'type' | 'status' | 'priority'
+    >[] = Array.from(Array(daysInMonth).keys()).map(day => {
+      const date = dayjs(`${year}-${month}-${day + 1}`).toDate();
+      const shift = filteredDates.find(shift =>
+        dayjs(shift.date).isSame(date, 'day')
+      );
+      return shift
+        ? { type: shift.type, status: shift.status, priority: shift.priority }
+        : { type: '', status: '', priority: '' };
+    });
 
     return { name: title, shifts: mappedDates };
   });
 };
 
-export const transformRosterCellValue = (value: ShiftType | string) => {
+export const transformRosterCellValue = (
+  value: ShiftType | ShiftPriority | string
+) => {
   switch (value) {
     case ShiftType.HOLIDAY:
       return 'H';
     case ShiftType.LEAVE:
+    case ShiftPriority.NORMAL:
+    case ShiftPriority.ANL1:
+    case ShiftPriority.ANL2:
+    case ShiftPriority.ANL3:
       return 'L';
     case ShiftType.OFF:
       return 'X';

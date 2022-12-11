@@ -76,8 +76,8 @@ const RosterPage: NextPage = () => {
           </Title>
           <Flex gap="md" align="center">
             <Button
-              color="violet"
-              variant="light"
+              color="company-secondary"
+              variant="outline"
               onClick={handleClickSwitchRoster}
               disabled={!routerReady && !validQueries}
             >
@@ -89,7 +89,6 @@ const RosterPage: NextPage = () => {
                 query: { year, month },
               }}
               component={Link}
-              variant="light"
               disabled={!routerReady && !validQueries}
             >
               <span>New</span>
@@ -98,14 +97,16 @@ const RosterPage: NextPage = () => {
         </Flex>
         <Flex justify="space-between">
           <Button
-            variant="light"
+            color="gray"
+            variant="outline"
             onClick={handleClickPrevious}
             disabled={!routerReady && !validQueries}
           >
             <span>Previous</span>
           </Button>
           <Button
-            variant="light"
+            color="gray"
+            variant="outline"
             onClick={handleClickNext}
             disabled={!routerReady && !validQueries}
           >

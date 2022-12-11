@@ -39,7 +39,7 @@ const LoginPage: FC<PaperProps> = props => {
       showNotification({
         title: 'Login failed',
         message: message,
-        color: 'red',
+        color: 'company-error',
       });
     }
   };

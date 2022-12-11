@@ -98,7 +98,7 @@ const ChangePasswordPage: FC = () => {
 
       showNotification({
         title: 'Error',
-        color: 'red',
+        color: 'company-error',
         autoClose: 5000,
         message,
       });
@@ -138,7 +138,7 @@ const ChangePasswordPage: FC = () => {
                 <Flex justify="space-between" mt="md">
                   <Button
                     variant="outline"
-                    color="red"
+                    color="company-error"
                     onClick={() => router.back()}
                   >
                     Cancel

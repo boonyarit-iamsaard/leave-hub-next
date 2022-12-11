@@ -39,23 +39,27 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
         icon={<MdOutlineHome size={16} />}
         label="Home"
         onClick={() => setOpen(false)}
+        variant="filled"
       />
       <NavLink
         active={pathname.includes('/roster')}
-        label="Roster"
         icon={<MdOutlineCalendarViewMonth size={16} />}
+        label="Roster"
+        variant="filled"
       >
         <NavLink
           href={getDefaultRosterPath('engineer')}
           label="Engineer"
           component={Link}
           onClick={() => setOpen(false)}
+          variant="filled"
         />
         <NavLink
           label="Mechanic"
           href={getDefaultRosterPath('mechanic')}
           component={Link}
           onClick={() => setOpen(false)}
+          variant="filled"
         />
       </NavLink>
       {/* /change-password */}
@@ -66,6 +70,7 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
         icon={<MdOutlineManageAccounts size={16} />}
         label="Change Password"
         onClick={() => setOpen(false)}
+        variant="filled"
       />
       {sessionData?.user?.role === Role.ADMIN && (
         <NavLink
@@ -75,6 +80,7 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
           icon={<MdOutlineManageAccounts size={16} />}
           label="Admin"
           onClick={() => setOpen(false)}
+          variant="filled"
         />
       )}
     </>

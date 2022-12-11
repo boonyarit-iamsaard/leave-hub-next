@@ -7,10 +7,12 @@ const RosterTableRowTitle: FC<{ value: string }> = ({ value }) => {
     <Flex
       align="center"
       pl="md"
-      miw={160}
+      miw={120}
       sx={theme => ({
+        flexGrow: 1,
         borderTop: `1px solid ${theme.colors.gray[3]}`,
         borderLeft: `1px solid ${theme.colors.gray[3]}`,
+        background: theme.colors.teal[0],
       })}
     >
       {value}

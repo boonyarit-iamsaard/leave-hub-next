@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import { Flex } from '@mantine/core';
-import { Roster } from '@prisma/client';
+import { Roster, ShiftPriority } from '@prisma/client';
 import { sortBy } from 'lodash';
 import { useSession } from 'next-auth/react';
 
@@ -33,6 +33,10 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
 
   const [shiftRows, setShiftRows] = useState<ShiftRow[]>([]);
 
+  const normalPriority = (priority: ShiftPriority | string): boolean => {
+    return priority === '' || priority === ShiftPriority.NORMAL;
+  };
+
   useEffect(() => {
     if (userData && shiftData) {
       const sortedUserData = sortBy(userData, user => {
@@ -55,7 +59,12 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
         <Flex h={32} key={row.name.id}>
           <RosterTableRowTitle value={row.name.name} />
           {row.shifts.map((shift, index) => (
-            <RosterTableCell key={index} value={shift.type} />
+            <RosterTableCell
+              key={index}
+              value={
+                normalPriority(shift.priority) ? shift.type : shift.priority
+              }
+            />
           ))}
         </Flex>
       ))}

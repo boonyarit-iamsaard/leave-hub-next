@@ -1,4 +1,4 @@
-import type { ShiftStatus, ShiftType } from '@prisma/client';
+import type { ShiftPriority, ShiftStatus, ShiftType } from '@prisma/client';
 
 export interface ShiftRow {
   name: {
@@ -8,5 +8,6 @@ export interface ShiftRow {
   shifts: {
     type: ShiftType | string;
     status: ShiftStatus | string;
+    priority: ShiftPriority | string;
   }[];
 }
