@@ -7,6 +7,7 @@ import { type AppType } from 'next/app';
 import Head from 'next/head';
 
 import { Layout } from '../components/layout';
+import { RouterTransition } from '../components/RouterTransition';
 import { theme } from '../styles/theme';
 import { emotionCache } from '../utils/emotion-cache';
 import { trpc } from '../utils/trpc';
@@ -33,6 +34,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         withNormalizeCSS
         theme={theme}
       >
+        <RouterTransition />
         <NotificationsProvider>
           <ModalsProvider>
             <Layout>
