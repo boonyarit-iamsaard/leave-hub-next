@@ -1,6 +1,45 @@
 import type { MantineThemeOverride } from '@mantine/core';
 
 export const theme: MantineThemeOverride = {
+  colors: {
+    'company-primary': [
+      '#00B3B1',
+      '#00A3A1',
+      '#009492',
+      '#008685',
+      '#007A79',
+      '#006F6E',
+      '#006564',
+      '#005B5A',
+      '#005251',
+      '#004A49',
+    ],
+    'company-secondary': [
+      '#FEFEFE',
+      '#EDE9E1',
+      '#DDD6C7',
+      '#CEC4B0',
+      '#C1B49A',
+      '#B4A484',
+      '#A89671',
+      '#9D8960',
+      '#8D7B57',
+      '#7F6F4E',
+    ],
+    'company-error': [
+      '#E67488',
+      '#E15971',
+      '#DC415D',
+      '#D82B4A',
+      '#C82441',
+      '#B6213B',
+      '#A51E36',
+      '#951B31',
+      '#86182C',
+      '#781627',
+    ],
+  },
   colorScheme: 'light',
   fontFamily: 'Inter, sans-serif',
+  primaryColor: 'company-primary',
 };
