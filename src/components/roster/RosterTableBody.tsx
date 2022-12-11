@@ -2,10 +2,11 @@ import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import { Flex } from '@mantine/core';
-import { Roster, ShiftPriority } from '@prisma/client';
+import { Role, Roster, ShiftPriority, ShiftType } from '@prisma/client';
 import { sortBy } from 'lodash';
 import { useSession } from 'next-auth/react';
 
+import { PHASE } from '../../constants/constants';
 import type { ShiftRow } from '../../types/roster';
 import { extractFirstName, populateRosterBodyRows } from '../../utils/roster';
 import { trpc } from '../../utils/trpc';
@@ -48,10 +49,30 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
         name: extractFirstName(user.name),
       }));
 
-      const shiftRows = populateRosterBodyRows(titles, shiftData, year, month);
+      // TODO: Improve this logic
+      const filteredShiftData = shiftData.filter(shift => {
+        if (PHASE === 'B') return shift;
+        if (shift.type === ShiftType.OFF) return shift;
+        if (sessionData?.user?.role === Role.ADMIN) return shift;
+        if (shift.userId === sessionData?.user?.id) return shift;
+      });
+
+      const shiftRows = populateRosterBodyRows(
+        titles,
+        filteredShiftData,
+        year,
+        month
+      );
       setShiftRows(shiftRows);
     }
-  }, [userData, shiftData, year, month]);
+  }, [
+    userData,
+    shiftData,
+    year,
+    month,
+    sessionData?.user?.id,
+    sessionData?.user?.role,
+  ]);
 
   return (
     <>
