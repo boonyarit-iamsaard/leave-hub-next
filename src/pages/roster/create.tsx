@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Button,
@@ -16,23 +16,19 @@ import { showNotification } from '@mantine/notifications';
 import type { Shift } from '@prisma/client';
 import { Role, ShiftPriority, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
-import type { NextPage } from 'next';
+import type { GetServerSideProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { PHASE } from '../../constants/constants';
+import { sessionGuard } from '../../guards/session.guard';
 import { trpc } from '../../utils/trpc';
-
-// TODO: Implement global config
-const configs: { phase: 'A' | 'B' } = {
-  phase: 'A',
-};
 
 const initialValues: Pick<Shift, 'start' | 'end' | 'type' | 'priority'> = {
   start: dayjs().toDate(),
   end: dayjs().toDate(),
   type: ShiftType.LEAVE,
-  // TODO: config.phase needs to be fetched from global config
-  priority: configs.phase === 'A' ? ShiftPriority.ANL3 : ShiftPriority.NORMAL,
+  priority: PHASE === 'A' ? ShiftPriority.ANL3 : ShiftPriority.NORMAL,
 };
 
 const shiftTypeOptions = (role: Role) =>
@@ -42,11 +38,10 @@ const shiftTypeOptions = (role: Role) =>
     disabled: role === Role.USER && type === ShiftType.OFF,
   }));
 
-const shiftPriorityOptions = (phase: 'A' | 'B', type: ShiftType) =>
+const shiftPriorityOptions = (phase: typeof PHASE, type: ShiftType) =>
   Object.values(ShiftPriority).map(priority => ({
     label: priority,
     value: priority,
-    // TODO: Implement disable logic
     disabled:
       phase === 'A' &&
       priority === ShiftPriority.NORMAL &&
@@ -54,6 +49,9 @@ const shiftPriorityOptions = (phase: 'A' | 'B', type: ShiftType) =>
   }));
 
 const CreatePage: NextPage = () => {
+  const defaultPriority =
+    PHASE === 'A' ? ShiftPriority.ANL3 : ShiftPriority.NORMAL;
+
   const router = useRouter();
   const { year, month } = router.query;
   const { data: sessionData } = useSession();
@@ -74,6 +72,24 @@ const CreatePage: NextPage = () => {
     },
     // TODO: Handle error
   });
+
+  const [shouldDisable, setShouldDisable] = useState<boolean>(false);
+
+  const handleShiftTypeChange = (value: string | null) => {
+    if (value) {
+      const type = ShiftType[value as keyof typeof ShiftType];
+      if (type !== ShiftType.LEAVE) {
+        setShouldDisable(true);
+        form.setFieldValue('priority', ShiftPriority.NORMAL);
+      } else {
+        setShouldDisable(false);
+        form.setFieldValue('priority', defaultPriority);
+      }
+      form.setFieldValue('type', type);
+    } else {
+      setShouldDisable(false);
+    }
+  };
 
   const handleSubmit = async () => {
     await createShiftMutation.mutateAsync({
@@ -139,6 +155,8 @@ const CreatePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [month, router.isReady, year]);
 
+  console.log('shoule disabled -> ', shouldDisable);
+
   return (
     <Container size="xs">
       <Stack>
@@ -149,20 +167,16 @@ const CreatePage: NextPage = () => {
               <Select
                 label="Type"
                 placeholder="Select type"
-                data={shiftTypeOptions(sessionData.user.role)}
                 value={form.values.type}
-                onChange={type =>
-                  form.setFieldValue(
-                    'type',
-                    ShiftType[type as keyof typeof ShiftType]
-                  )
-                }
+                data={shiftTypeOptions(sessionData.user.role)}
+                onChange={value => handleShiftTypeChange(value)}
               />
               <Select
                 label="Priority"
                 placeholder="Select priority"
-                data={shiftPriorityOptions(configs.phase, form.values.type)}
+                disabled={shouldDisable}
                 value={form.values.priority}
+                data={shiftPriorityOptions(PHASE, form.values.type)}
                 onChange={priority =>
                   form.setFieldValue(
                     'priority',
@@ -172,8 +186,8 @@ const CreatePage: NextPage = () => {
               />
               <DatePicker
                 label="From"
-                value={form.values.start}
                 firstDayOfWeek="sunday"
+                value={form.values.start}
                 onChange={start => {
                   if (start) {
                     form.setFieldValue('start', start);
@@ -185,8 +199,8 @@ const CreatePage: NextPage = () => {
               />
               <DatePicker
                 label="To"
-                value={form.values.end}
                 firstDayOfWeek="sunday"
+                value={form.values.end}
                 minDate={form.values.start}
                 maxDate={dayjs(form.values.start).add(4, 'days').toDate()}
                 onChange={end => {
@@ -196,10 +210,14 @@ const CreatePage: NextPage = () => {
                 }}
               />
               <Flex justify="space-between">
-                <Button variant="outline" color="red" onClick={router.back}>
+                <Button
+                  variant="outline"
+                  color="company-error"
+                  onClick={router.back}
+                >
                   Cancel
                 </Button>
-                <Button variant="outline" color="blue" onClick={handleConfirm}>
+                <Button color="company-primary" onClick={handleConfirm}>
                   Create
                 </Button>
               </Flex>
@@ -212,3 +230,11 @@ const CreatePage: NextPage = () => {
 };
 
 export default CreatePage;
+
+export const getServerSideProps: GetServerSideProps = sessionGuard(
+  // TODO: Fix eslint warning
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async ctx => ({
+    props: {},
+  })
+);
