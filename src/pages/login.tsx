@@ -47,9 +47,23 @@ const LoginPage: FC<PaperProps> = props => {
   return (
     <Box sx={{ display: 'grid', height: '100%', placeItems: 'center' }}>
       <Paper radius="md" p="xl" withBorder {...props}>
-        <Text size="lg" weight={500}>
-          Leave Hub | Bangkok Engineering
-        </Text>
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt="Logo"
+            src="/logo.png"
+            style={{
+              marginInline: 'auto',
+              marginBottom: 16,
+              display: 'block',
+              height: 40,
+              aspectRatio: 'auto',
+            }}
+          />
+          <Text size="lg" weight={500}>
+            Leave Hub - Bangkok Engineering
+          </Text>
+        </div>
         <form onSubmit={form.onSubmit(handleLogin)}>
           <Stack pt="xl">
             <TextInput
@@ -70,9 +84,7 @@ const LoginPage: FC<PaperProps> = props => {
                 form.setFieldValue('password', event.currentTarget.value)
               }
             />
-            <Button type="submit" color="blue">
-              Login
-            </Button>
+            <Button type="submit">Login</Button>
           </Stack>
         </form>
       </Paper>
