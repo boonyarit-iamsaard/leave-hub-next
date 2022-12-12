@@ -82,6 +82,8 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
           {row.shifts.map((shift, index) => (
             <RosterTableCell
               key={index}
+              id={shift.id}
+              isAdmin={sessionData?.user?.role === Role.ADMIN}
               value={
                 normalPriority(shift.priority) ? shift.type : shift.priority
               }

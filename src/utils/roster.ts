@@ -54,7 +54,7 @@ export const populateRosterBodyRows = (
   return titles.map(title => {
     const dates: (Pick<
       ShiftRow['shifts'][number],
-      'type' | 'status' | 'priority'
+      'type' | 'status' | 'priority' | 'id'
     > & {
       date: Date;
     })[] = [];
@@ -67,6 +67,7 @@ export const populateRosterBodyRows = (
         start = dayjs(start).add(1, 'day').toDate()
       ) {
         dates.push({
+          id: shift.id,
           type: shift.type,
           status: shift.status,
           priority: shift.priority,
@@ -82,15 +83,20 @@ export const populateRosterBodyRows = (
 
     const mappedDates: Pick<
       ShiftRow['shifts'][number],
-      'type' | 'status' | 'priority'
+      'type' | 'status' | 'priority' | 'id'
     >[] = Array.from(Array(daysInMonth).keys()).map(day => {
       const date = dayjs(`${year}-${month}-${day + 1}`).toDate();
       const shift = filteredDates.find(shift =>
         dayjs(shift.date).isSame(date, 'day')
       );
       return shift
-        ? { type: shift.type, status: shift.status, priority: shift.priority }
-        : { type: '', status: '', priority: '' };
+        ? {
+            type: shift.type,
+            status: shift.status,
+            priority: shift.priority,
+            id: shift.id,
+          }
+        : { type: '', status: '', priority: '', id: '' };
     });
 
     return { name: title, shifts: mappedDates };

@@ -6,6 +6,7 @@ export interface ShiftRow {
     name: string;
   };
   shifts: {
+    id: string;
     type: ShiftType | string;
     status: ShiftStatus | string;
     priority: ShiftPriority | string;

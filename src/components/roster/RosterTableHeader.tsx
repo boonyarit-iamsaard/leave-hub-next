@@ -51,21 +51,36 @@ const RosterTableHeader: FC<RosterTableHeaderProps> = ({ month, year }) => {
       <Flex h={32}>
         <RosterTableRowTitle value="Day" />
         {days.map(day => (
-          <RosterTableCell key={day} value={day.toString()} />
+          <RosterTableCell
+            key={day}
+            value={day.toString()}
+            id=""
+            isAdmin={false}
+          />
         ))}
       </Flex>
       {/* RosterTableHeaderRow */}
       <Flex h={32}>
         <RosterTableRowTitle value="Day of Week" />
         {daysOfWeek.map((dayOfWeek, index) => (
-          <RosterTableCell key={index} value={dayOfWeek} />
+          <RosterTableCell
+            key={index}
+            value={dayOfWeek}
+            id=""
+            isAdmin={false}
+          />
         ))}
       </Flex>
       {/* RosterTableHeaderRow */}
       <Flex h={32}>
         <RosterTableRowTitle value="Public Holiday" />
         {publicHolidays.map((publicHoliday, index) => (
-          <RosterTableCell key={index} value={publicHoliday} />
+          <RosterTableCell
+            key={index}
+            value={publicHoliday}
+            id=""
+            isAdmin={false}
+          />
         ))}
       </Flex>
     </>

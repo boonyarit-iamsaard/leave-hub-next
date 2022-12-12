@@ -4,7 +4,14 @@ import type { MantineTheme } from '@mantine/core';
 import { Center, useMantineTheme } from '@mantine/core';
 import { ShiftPriority, ShiftType } from '@prisma/client';
 
+import { useRouter } from 'next/router';
 import { transformRosterCellValue } from '../../utils/roster';
+
+interface RosterTableCellProps {
+  id: string;
+  isAdmin: boolean;
+  value: string;
+}
 
 const assignColor = (
   value: ShiftType | ShiftPriority | string,
@@ -31,14 +38,28 @@ const assignColor = (
   }
 };
 
-const RosterTableCell: FC<{ value: string }> = ({ value }) => {
+const RosterTableCell: FC<RosterTableCellProps> = ({
+  value,
+  id,
+  isAdmin = false,
+}) => {
+  const router = useRouter();
   const theme = useMantineTheme();
   const color = assignColor(value, theme);
 
+  const handleClickCell = () => {
+    if (!isAdmin) return;
+    if (id === '') return;
+    console.log(id, value);
+    router.push(`/roster/edit/${id}`);
+  };
+
   return (
     <Center
+      onClick={handleClickCell}
       miw={32}
       sx={theme => ({
+        cursor: isAdmin && id !== '' ? 'pointer' : 'default',
         borderTop: `1px solid ${theme.colors.gray[3]}`,
         borderLeft: `1px solid ${theme.colors.gray[3]}`,
         backgroundColor: color ? color : 'white',
