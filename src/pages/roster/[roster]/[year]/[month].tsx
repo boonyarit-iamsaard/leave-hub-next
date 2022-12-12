@@ -6,7 +6,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { RosterTable } from '../../../../components/roster';
+import { RosterNavigation, RosterTable } from '../../../../components/roster';
 import { sessionGuard } from '../../../../guards/session.guard';
 
 const RosterPage: NextPage = () => {
@@ -95,7 +95,7 @@ const RosterPage: NextPage = () => {
             </Button>
           </Flex>
         </Flex>
-        <Flex justify="space-between">
+        <Flex justify="space-between" align="flex-end">
           <Button
             color="gray"
             variant="outline"
@@ -104,6 +104,15 @@ const RosterPage: NextPage = () => {
           >
             <span>Previous</span>
           </Button>
+
+          <RosterNavigation
+            roster={roster as string}
+            year={year as string}
+            month={month as string}
+            routerReady={routerReady}
+            validQueries={validQueries}
+          />
+
           <Button
             color="gray"
             variant="outline"
