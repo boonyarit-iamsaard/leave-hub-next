@@ -21,7 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Head>
-        <title>Leave Hub | Bangkok Engineering</title>
+        <title>Leave Hub - Bangkok Engineering</title>
         <meta
           name="description"
           content="Leave management system for Bangkok engineering"
