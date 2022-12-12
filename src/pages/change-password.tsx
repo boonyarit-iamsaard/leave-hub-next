@@ -14,6 +14,7 @@ import {
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
+import { IconX } from '@tabler/icons';
 import { TRPCClientError } from '@trpc/client';
 import type { GetServerSideProps } from 'next';
 import { signOut, useSession } from 'next-auth/react';
@@ -101,6 +102,7 @@ const ChangePasswordPage: FC = () => {
         color: 'company-error',
         autoClose: 5000,
         message,
+        icon: <IconX size={18} />,
       });
 
       form.reset();

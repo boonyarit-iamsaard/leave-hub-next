@@ -19,6 +19,7 @@ import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import type { Entitlement, User } from '@prisma/client';
 import { Role, Roster } from '@prisma/client';
+import { IconCheck, IconX } from '@tabler/icons';
 import { TRPCClientError } from '@trpc/client';
 import dayjs from 'dayjs';
 import type { GetServerSideProps } from 'next';
@@ -44,9 +45,10 @@ const initialValues: Pick<
 
 const onSuccessNotification = (message?: string) =>
   showNotification({
-    color: 'green',
+    color: 'company-primary',
     title: 'Success',
     message: message ? message : 'User information updated successfully',
+    icon: <IconCheck size={18} />,
   });
 
 const UserDetail = () => {
@@ -130,6 +132,7 @@ const UserDetail = () => {
         color: 'company-error',
         autoClose: 5000,
         message,
+        icon: <IconX size={18} />,
       });
     }
   };

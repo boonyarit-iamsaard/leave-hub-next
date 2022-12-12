@@ -15,6 +15,7 @@ import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import type { Shift } from '@prisma/client';
 import { Role, ShiftPriority, ShiftType } from '@prisma/client';
+import { IconCheck } from '@tabler/icons';
 import dayjs from 'dayjs';
 import type { GetServerSideProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
@@ -96,6 +97,7 @@ const CreatePage: NextPage = () => {
         color: 'company-primary',
         title: 'Success',
         message: 'Created successfully',
+        icon: <IconCheck size={18} />,
       });
     },
   });
@@ -119,6 +121,7 @@ const CreatePage: NextPage = () => {
   const handleSubmit = async () => {
     await createShiftMutation.mutateAsync({
       // TODO: Refactor date sending to backend as database is in UTC
+      // TODO: Imprement error handling
       start: dayjs(form.values.start).add(7, 'hours').toDate(),
       end: dayjs(form.values.end).add(7, 'hours').toDate(),
       amount: dayjs(form.values.end).diff(form.values.start, 'day') + 1,
