@@ -1,9 +1,11 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 
 import type { PaperProps } from '@mantine/core';
 import {
   Box,
   Button,
+  Loader,
   Paper,
   PasswordInput,
   Stack,
@@ -12,34 +14,53 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
+import { IconX } from '@tabler/icons';
 import { signIn } from 'next-auth/react';
 
 const LoginPage: FC<PaperProps> = props => {
-  // TODO: Implement form validation
+  const [loading, setLoading] = useState<boolean>(false);
+
   const form = useForm({
     initialValues: { username: '', password: '' },
+    validate: {
+      username: value => {
+        if (!value) {
+          return 'Username is required';
+        }
+      },
+      password: value => {
+        if (!value) {
+          return 'Password is required';
+        }
+      },
+    },
   });
 
   const handleLogin = async () => {
     const { username, password } = form.values;
     try {
+      setLoading(true);
       const response = await signIn('credentials', {
         username,
         password,
         redirect: false,
       });
       if (response?.error) {
+        setLoading(false);
         throw new Error(response.error);
       }
       if (response?.ok) {
+        // TODO: Reconsider set loading state to false here
         window.location.href = '/';
       }
     } catch (error) {
+      setLoading(false);
       const message = error instanceof Error ? error.message : 'Unknown error';
       showNotification({
         title: 'Login failed',
         message: message,
         color: 'company-error',
+        icon: <IconX size={18} />,
       });
     }
   };
@@ -67,24 +88,24 @@ const LoginPage: FC<PaperProps> = props => {
         <form onSubmit={form.onSubmit(handleLogin)}>
           <Stack pt="xl">
             <TextInput
-              required
+              withAsterisk
+              disabled={loading}
               label="Username"
               placeholder="Your username"
-              value={form.values.username}
-              onChange={event =>
-                form.setFieldValue('username', event.currentTarget.value)
-              }
+              {...form.getInputProps('username')}
             />
             <PasswordInput
-              required
+              withAsterisk
+              disabled={loading}
               label="Password"
               placeholder="Your password"
-              value={form.values.password}
-              onChange={event =>
-                form.setFieldValue('password', event.currentTarget.value)
-              }
+              {...form.getInputProps('password')}
             />
-            <Button type="submit">Login</Button>
+            {loading ? (
+              <Loader variant="dots" style={{ marginInline: 'auto' }} />
+            ) : (
+              <Button type="submit">Login</Button>
+            )}
           </Stack>
         </form>
       </Paper>
