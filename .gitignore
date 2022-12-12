@@ -49,3 +49,4 @@ yarn-error.log*
 /seed-data/entitlements.json
 /seed-data/shifts.json
 /seed-data/public-holidays.json
+/seed-data/roster-sequence.json
