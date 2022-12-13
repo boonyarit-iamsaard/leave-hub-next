@@ -48,9 +48,7 @@ const RosterTableCell: FC<RosterTableCellProps> = ({
   const color = assignColor(value, theme);
 
   const handleClickCell = () => {
-    if (!isAdmin) return;
-    if (id === '') return;
-    console.log(id, value);
+    if (!isAdmin || id === '') return;
     router.push(`/roster/edit/${id}`);
   };
 
