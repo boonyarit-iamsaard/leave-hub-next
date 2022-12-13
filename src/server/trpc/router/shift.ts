@@ -2,7 +2,7 @@ import { Roster, ShiftPriority, ShiftStatus, ShiftType } from '@prisma/client';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 
-import { protectedProcedure, router } from '../trpc';
+import { adminProcedure, protectedProcedure, router } from '../trpc';
 
 export const shiftRouter = router({
   findManyByRoster: protectedProcedure
@@ -73,6 +73,20 @@ export const shiftRouter = router({
       });
     }),
 
+  findOneById: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.findUnique({
+        where: {
+          id: input.id,
+        },
+        // TODO: Exclude password
+        include: {
+          user: true,
+        },
+      });
+    }),
+
   create: protectedProcedure
     .input(
       z.object({
@@ -137,5 +151,33 @@ export const shiftRouter = router({
       });
 
       return groupByPriority;
+    }),
+
+  update: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        start: z.date(),
+        end: z.date(),
+        type: z.nativeEnum(ShiftType),
+        priority: z.nativeEnum(ShiftPriority),
+        status: z.nativeEnum(ShiftStatus),
+        amount: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          start: input.start,
+          end: input.end,
+          status: input.status,
+          type: input.type,
+          priority: input.priority,
+          amount: input.amount,
+        },
+      });
     }),
 });
