@@ -1,6 +1,7 @@
 import type { FC } from 'react';
+import { useState } from 'react';
 
-import { Button, Flex, Select, Stack } from '@mantine/core';
+import { Button, Flex, Loader, Select, Stack } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
@@ -49,6 +50,7 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
   const form = useForm({
     initialValues: mode === 'edit' && shift ? shift : initialValues,
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const updateShiftMutation = trpc.shift.update.useMutation({
     async onSuccess() {
@@ -91,6 +93,7 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       await updateShiftMutation.mutateAsync({
         id: shift.id,
@@ -105,15 +108,18 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
       router.back();
     } catch (error) {
       // TODO: Imprement error handling
+      setLoading(false);
       console.log(error);
     }
   };
   const handleDelete = async () => {
+    setLoading(true);
     try {
       await deleteShiftMutation.mutateAsync({ id: shift.id });
       router.back();
     } catch (error) {
       // TODO: Imprement error handling
+      setLoading(false);
       console.log(error);
     }
   };
@@ -143,6 +149,7 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           placeholder="Select type"
           value={form.values.type}
           data={shiftTypeOptions}
+          disabled={loading}
           onChange={value => handleShiftTypeChange(value)}
         />
         <Select
@@ -150,12 +157,14 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           placeholder="Select priority"
           value={form.values.priority}
           data={shiftPriorityOptions}
+          disabled={loading}
           onChange={value => handleShiftPriorityChange(value)}
         />
         <DatePicker
           label="From"
           firstDayOfWeek="sunday"
           value={form.values.start}
+          disabled={loading}
           onChange={start => {
             if (start) {
               form.setFieldValue('start', start);
@@ -171,6 +180,7 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           value={form.values.end}
           minDate={form.values.start}
           maxDate={dayjs(form.values.start).add(4, 'days').toDate()}
+          disabled={loading}
           onChange={end => {
             if (end) {
               form.setFieldValue('end', end);
@@ -182,22 +192,33 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           placeholder="Select status"
           value={form.values.status}
           data={shiftStatusOptions}
+          disabled={loading}
           onChange={value => handleShiftStatusChange(value)}
         />
         <Flex justify="space-between">
-          <Button variant="outline" color="company-error" onClick={router.back}>
-            Cancel
-          </Button>
-          <Flex gap="md">
-            {mode === 'edit' && (
-              <Button color="company-error" onClick={handleDelete}>
-                Delete
+          {loading ? (
+            <Loader variant="dots" style={{ marginInline: 'auto' }} />
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                color="company-error"
+                onClick={router.back}
+              >
+                Cancel
               </Button>
-            )}
-            <Button color="company-primary" onClick={handleConfirm}>
-              {mode === 'create' ? 'Create' : 'Update'}
-            </Button>
-          </Flex>
+              <Flex gap="md">
+                {mode === 'edit' && (
+                  <Button color="company-error" onClick={handleDelete}>
+                    Delete
+                  </Button>
+                )}
+                <Button color="company-primary" onClick={handleConfirm}>
+                  {mode === 'create' ? 'Create' : 'Update'}
+                </Button>
+              </Flex>
+            </>
+          )}
         </Flex>
       </Stack>
     </form>
