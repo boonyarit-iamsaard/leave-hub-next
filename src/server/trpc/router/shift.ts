@@ -180,4 +180,14 @@ export const shiftRouter = router({
         },
       });
     }),
+
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });

@@ -60,6 +60,16 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
       });
     },
   });
+  const deleteShiftMutation = trpc.shift.delete.useMutation({
+    async onSuccess() {
+      showNotification({
+        color: 'company-primary',
+        title: 'Success',
+        message: 'Deleted successfully',
+        icon: <IconCheck size={18} />,
+      });
+    },
+  });
 
   const handleShiftTypeChange = (value: string | null) => {
     if (!value) return;
@@ -91,8 +101,16 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
         status: form.values.status,
         amount: dayjs(form.values.end).diff(form.values.start, 'day') + 1,
       });
-
       form.reset();
+      router.back();
+    } catch (error) {
+      // TODO: Imprement error handling
+      console.log(error);
+    }
+  };
+  const handleDelete = async () => {
+    try {
+      await deleteShiftMutation.mutateAsync({ id: shift.id });
       router.back();
     } catch (error) {
       // TODO: Imprement error handling
@@ -170,9 +188,16 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           <Button variant="outline" color="company-error" onClick={router.back}>
             Cancel
           </Button>
-          <Button color="company-primary" onClick={handleConfirm}>
-            {mode === 'create' ? 'Create' : 'Update'}
-          </Button>
+          <Flex gap="md">
+            {mode === 'edit' && (
+              <Button color="company-error" onClick={handleDelete}>
+                Delete
+              </Button>
+            )}
+            <Button color="company-primary" onClick={handleConfirm}>
+              {mode === 'create' ? 'Create' : 'Update'}
+            </Button>
+          </Flex>
         </Flex>
       </Stack>
     </form>
