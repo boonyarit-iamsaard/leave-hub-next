@@ -97,8 +97,8 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
     try {
       await updateShiftMutation.mutateAsync({
         id: shift.id,
-        start: dayjs(form.values.start).add(7, 'hours').toDate(),
-        end: dayjs(form.values.end).add(7, 'hours').toDate(),
+        start: form.values.start,
+        end: form.values.end,
         type: form.values.type,
         priority: form.values.priority,
         status: form.values.status,
@@ -166,10 +166,17 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           value={form.values.start}
           disabled={loading}
           onChange={start => {
+            // TODO: Improve on date change handler
             if (start) {
-              form.setFieldValue('start', start);
+              form.setFieldValue(
+                'start',
+                dayjs(start).add(7, 'hours').toDate()
+              );
               if (dayjs(form.values.end).isBefore(start)) {
-                form.setFieldValue('end', start);
+                form.setFieldValue(
+                  'end',
+                  dayjs(start).add(7, 'hours').toDate()
+                );
               }
             }
           }}
@@ -183,7 +190,8 @@ const ShiftForm: FC<ShiftFormProps> = ({ mode, shift }) => {
           disabled={loading}
           onChange={end => {
             if (end) {
-              form.setFieldValue('end', end);
+              // TODO: Improve on date change handler
+              form.setFieldValue('end', dayjs(end).add(7, 'hours').toDate());
             }
           }}
         />
