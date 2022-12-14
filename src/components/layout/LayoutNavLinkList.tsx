@@ -17,7 +17,8 @@ interface LayoutNavLinkListProps {
 }
 
 const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
-  const { pathname } = useRouter();
+  // TODO: Reconsider using either asPath or pathname
+  const { asPath, pathname } = useRouter();
   const { data: sessionData } = useSession();
 
   const getDefaultRosterPath = (roster: 'mechanic' | 'engineer') => {
@@ -42,12 +43,12 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
         variant="filled"
       />
       <NavLink
-        active={pathname.includes('/roster')}
         icon={<MdOutlineCalendarViewMonth size={16} />}
         label="Roster"
         variant="filled"
       >
         <NavLink
+          active={asPath.includes('/roster/engineer')}
           href={getDefaultRosterPath('engineer')}
           label="Engineer"
           component={Link}
@@ -55,6 +56,7 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
           variant="filled"
         />
         <NavLink
+          active={asPath.includes('/roster/mechanic')}
           label="Mechanic"
           href={getDefaultRosterPath('mechanic')}
           component={Link}
@@ -62,7 +64,6 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
           variant="filled"
         />
       </NavLink>
-      {/* /change-password */}
       <NavLink
         active={pathname.includes('/change-password')}
         component={Link}
@@ -74,14 +75,27 @@ const LayoutNavLinkList: FC<LayoutNavLinkListProps> = ({ setOpen }) => {
       />
       {sessionData?.user?.role === Role.ADMIN && (
         <NavLink
-          active={pathname.includes('/admin')}
-          component={Link}
-          href="/admin"
           icon={<MdOutlineManageAccounts size={16} />}
           label="Admin"
-          onClick={() => setOpen(false)}
           variant="filled"
-        />
+        >
+          <NavLink
+            active={pathname.includes('/admin/users')}
+            component={Link}
+            href="/admin/users"
+            label="Users"
+            onClick={() => setOpen(false)}
+            variant="filled"
+          />
+          <NavLink
+            active={pathname.includes('/admin/history')}
+            component={Link}
+            href="/admin/history"
+            label="History"
+            onClick={() => setOpen(false)}
+            variant="filled"
+          />
+        </NavLink>
       )}
     </>
   );

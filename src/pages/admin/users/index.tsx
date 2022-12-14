@@ -22,8 +22,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { MdSearch } from 'react-icons/md';
 
-import { adminGuard } from '../../guards/admin.guard';
-import { trpc } from '../../utils/trpc';
+import { adminGuard } from '../../../guards/admin.guard';
+import { trpc } from '../../../utils/trpc';
 
 interface UserRecord {
   id: string;
