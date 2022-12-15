@@ -73,6 +73,31 @@ export const shiftRouter = router({
       });
     }),
 
+  findMany: adminProcedure
+    .input(
+      z.object({
+        year: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.shift.findMany({
+        where: {
+          start: {
+            gte: new Date(`${input.year}-01-01T00:00:00.000Z`),
+          },
+          end: {
+            lte: new Date(`${input.year}-12-31T23:59:59.999Z`),
+          },
+          type: {
+            not: ShiftType.OFF,
+          },
+        },
+        include: {
+          user: true,
+        },
+      });
+    }),
+
   findOneById: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
