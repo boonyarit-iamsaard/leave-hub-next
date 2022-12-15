@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 
 import { Button, Container, Flex, Select, Stack, Title } from '@mantine/core';
-import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
@@ -13,6 +12,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 
+import { FormDatePicker } from '../../components/common/forms';
 import { ShiftFormConfirmDialog } from '../../components/shift';
 import { PHASE } from '../../constants/constants';
 import { sessionGuard } from '../../guards/session.guard';
@@ -195,29 +195,23 @@ const CreatePage: NextPage = () => {
                   )
                 }
               />
-              <DatePicker
-                label="From"
-                firstDayOfWeek="sunday"
+              <FormDatePicker
+                path="start"
                 value={form.values.start}
                 onChange={start => {
-                  if (start) {
-                    form.setFieldValue('start', start);
-                    if (dayjs(form.values.end).isBefore(start)) {
-                      form.setFieldValue('end', start);
-                    }
+                  form.setFieldValue('start', start);
+                  if (dayjs(form.values.end).isBefore(start)) {
+                    form.setFieldValue('end', start);
                   }
                 }}
               />
-              <DatePicker
-                label="To"
-                firstDayOfWeek="sunday"
+              <FormDatePicker
+                path="end"
                 value={form.values.end}
                 minDate={form.values.start}
                 maxDate={dayjs(form.values.start).add(4, 'days').toDate()}
                 onChange={end => {
-                  if (end) {
-                    form.setFieldValue('end', end);
-                  }
+                  form.setFieldValue('end', end);
                 }}
               />
               <Flex justify="space-between">
