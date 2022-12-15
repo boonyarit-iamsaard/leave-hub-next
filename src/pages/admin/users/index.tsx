@@ -47,8 +47,9 @@ const AdminPage: NextPage<
     }
   );
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const [records, setRecords] = useState<UserRecord[]>([]);
+  const [totalRecords, setTotalRecords] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
     columnAccessor: 'roster',
@@ -105,6 +106,7 @@ const AdminPage: NextPage<
         page * PAGE_SIZE
       );
 
+      setTotalRecords(sortedRecords.length);
       setRecords(paginatedRecords);
     }
   }, [
@@ -148,7 +150,7 @@ const AdminPage: NextPage<
             recordsPerPage={PAGE_SIZE}
             sortStatus={sortStatus}
             striped
-            totalRecords={users?.length ?? 0}
+            totalRecords={totalRecords}
             withBorder
           />
         )}
