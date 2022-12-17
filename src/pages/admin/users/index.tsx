@@ -1,3 +1,4 @@
+import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import {
@@ -5,11 +6,13 @@ import {
   Flex,
   Loader,
   Stack,
+  Text,
   TextInput,
   Title,
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
-import type { Role, Roster } from '@prisma/client';
+import type { Entitlement, Role, Roster } from '@prisma/client';
+import { ShiftType } from '@prisma/client';
 import { sortBy } from 'lodash';
 import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 import { DataTable } from 'mantine-datatable';
@@ -25,18 +28,58 @@ import { MdSearch } from 'react-icons/md';
 import { adminGuard } from '../../../guards/admin.guard';
 import { trpc } from '../../../utils/trpc';
 
+// TODO: Improve typing
 interface UserRecord {
   id: string;
   name: string;
   email: string;
   role: Role;
   roster: Roster;
+  entitlements: Entitlement[];
+  shifts: {
+    type: ShiftType;
+    amount: number;
+  }[];
 }
+
+interface UsageColumnProps {
+  year: number;
+  entitlements: Entitlement[];
+  shifts: {
+    type: ShiftType;
+    amount: number;
+  }[];
+}
+
+const UsageColumn: FC<UsageColumnProps> = ({ year, entitlements, shifts }) => {
+  const entitlement =
+    entitlements.find(entitlement => entitlement.year === year)?.amount || 0;
+  const leave = shifts.reduce((acc, { type, amount }) => {
+    if (type === ShiftType.LEAVE) {
+      return acc + amount;
+    }
+
+    return acc;
+  }, 0);
+
+  return (
+    <Flex align="center" gap="md">
+      <Text>
+        {leave} / {entitlement}
+      </Text>
+      <Text size="xs" color="gray">
+        ({((leave / entitlement) * 100).toFixed(2)}%)
+      </Text>
+    </Flex>
+  );
+};
 
 const AdminPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = () => {
   const PAGE_SIZE = 10;
+  // TODO: Implement year selection
+  const YEAR = 2023;
 
   const router = useRouter();
   const { data: sessionData } = useSession();
@@ -68,6 +111,19 @@ const AdminPage: NextPage<
         return roster.charAt(0).toUpperCase() + roster.slice(1).toLowerCase();
       },
       sortable: true,
+    },
+    {
+      accessor: 'shifts',
+      title: 'Usage',
+      render: ({ entitlements, shifts }) => {
+        return (
+          <UsageColumn
+            year={YEAR}
+            entitlements={entitlements}
+            shifts={shifts}
+          />
+        );
+      },
     },
     {
       accessor: 'role',

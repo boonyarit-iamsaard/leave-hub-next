@@ -1,4 +1,4 @@
-import { Role, Roster } from '@prisma/client';
+import { Role, Roster, ShiftStatus, ShiftType } from '@prisma/client';
 import { hash, verify } from 'argon2';
 import { z } from 'zod';
 
@@ -13,6 +13,20 @@ export const userRouter = router({
         name: true,
         role: true,
         roster: true,
+        entitlements: true,
+        // TODO: Implement select shifts by year for summary in admin user list
+        shifts: {
+          where: {
+            status: {
+              not: ShiftStatus.REJECTED,
+            },
+            type: ShiftType.LEAVE,
+          },
+          select: {
+            type: true,
+            amount: true,
+          },
+        },
       },
     });
   }),
