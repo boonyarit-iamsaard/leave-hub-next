@@ -278,6 +278,7 @@ const UserDetail = () => {
                     <Grid.Col span={4}>
                       <NumberInput
                         label="Amount"
+                        precision={2}
                         {...form.getInputProps(`entitlements.${index}.amount`)}
                       />
                     </Grid.Col>
