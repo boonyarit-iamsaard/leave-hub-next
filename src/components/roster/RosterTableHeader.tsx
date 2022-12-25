@@ -56,6 +56,7 @@ const RosterTableHeader: FC<RosterTableHeaderProps> = ({ month, year }) => {
             value={day.toString()}
             id=""
             isAdmin={false}
+            status=""
           />
         ))}
       </Flex>
@@ -68,6 +69,7 @@ const RosterTableHeader: FC<RosterTableHeaderProps> = ({ month, year }) => {
             value={dayOfWeek}
             id=""
             isAdmin={false}
+            status=""
           />
         ))}
       </Flex>
@@ -80,6 +82,7 @@ const RosterTableHeader: FC<RosterTableHeaderProps> = ({ month, year }) => {
             value={publicHoliday}
             id=""
             isAdmin={false}
+            status=""
           />
         ))}
       </Flex>

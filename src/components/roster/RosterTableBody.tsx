@@ -87,6 +87,7 @@ const RosterTableBody: FC<RosterTableBodyProps> = ({ month, roster, year }) => {
               value={
                 normalPriority(shift.priority) ? shift.type : shift.priority
               }
+              status={shift.status}
             />
           ))}
         </Flex>
