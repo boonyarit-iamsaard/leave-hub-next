@@ -2,8 +2,10 @@ import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
 import {
+  ActionIcon,
   Container,
   Flex,
+  Group,
   Loader,
   Stack,
   Text,
@@ -13,6 +15,7 @@ import {
 import { useDebouncedValue } from '@mantine/hooks';
 import type { Entitlement, Role, Roster } from '@prisma/client';
 import { ShiftType } from '@prisma/client';
+import { IconPencil, IconSearch, IconUser } from '@tabler/icons';
 import { sortBy } from 'lodash';
 import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 import { DataTable } from 'mantine-datatable';
@@ -23,7 +26,6 @@ import type {
 } from 'next';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { MdSearch } from 'react-icons/md';
 
 import { adminGuard } from '../../../guards/admin.guard';
 import { trpc } from '../../../utils/trpc';
@@ -132,6 +134,37 @@ const AdminPage: NextPage<
       },
       sortable: true,
     },
+    {
+      accessor: 'actions',
+      title: <Text size="xs">Actions</Text>,
+      textAlignment: 'right',
+      render: ({ id }) => (
+        <Group spacing={4} position="right" noWrap>
+          <ActionIcon
+            color="company-primary"
+            onClick={() =>
+              router.push({
+                pathname: '/profile/[id]',
+                query: { id },
+              })
+            }
+          >
+            <IconUser size={16} />
+          </ActionIcon>
+          <ActionIcon
+            color="company-secondary"
+            onClick={() =>
+              router.push({
+                pathname: '/admin/users/[id]',
+                query: { id },
+              })
+            }
+          >
+            <IconPencil size={16} />
+          </ActionIcon>
+        </Group>
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -182,7 +215,7 @@ const AdminPage: NextPage<
           <TextInput
             onChange={e => setSearchTerm(e.currentTarget.value)}
             placeholder="Search by name, email, roster, or role"
-            icon={<MdSearch />}
+            icon={<IconSearch size={16} />}
             value={searchTerm}
             sx={{ flexGrow: 1 }}
           />
@@ -194,12 +227,6 @@ const AdminPage: NextPage<
             columns={columns}
             mih={records.length === 0 ? 160 : undefined}
             onPageChange={p => setPage(p)}
-            onRowClick={({ id }) =>
-              router.push({
-                pathname: '/admin/users/[id]',
-                query: { id },
-              })
-            }
             onSortStatusChange={setSortStatus}
             page={page}
             records={records}

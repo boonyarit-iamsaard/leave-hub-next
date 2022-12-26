@@ -69,21 +69,27 @@ export const userRouter = router({
         },
       });
     }),
-  profile: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        roster: true,
-        entitlements: true,
-      },
-    });
-  }),
+  profile: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().or(z.string().array()).optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findUnique({
+        where: {
+          id: typeof input.id === 'string' ? input.id : ctx.session.user.id,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          roster: true,
+          entitlements: true,
+        },
+      });
+    }),
   update: adminProcedure
     .input(
       z.object({

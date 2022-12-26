@@ -64,10 +64,10 @@ export const shiftRouter = router({
             not: ShiftType.OFF,
           },
           start: {
-            gte: dayjs(`${input.year}-01-01`).toDate(),
+            gte: dayjs(`${input.year}-01-01T00:00:00.000Z`).toDate(),
           },
           end: {
-            lte: dayjs(`${input.year}-12-31`).toDate(),
+            lte: dayjs(`${input.year}-12-31T23:59:59.999Z`).toDate(),
           },
         },
       });
@@ -83,10 +83,10 @@ export const shiftRouter = router({
       return await ctx.prisma.shift.findMany({
         where: {
           start: {
-            gte: new Date(`${input.year}-01-01T00:00:00.000Z`),
+            gte: dayjs(`${input.year}-01-01T00:00:00.000Z`).toDate(),
           },
           end: {
-            lte: new Date(`${input.year}-12-31T23:59:59.999Z`),
+            lte: dayjs(`${input.year}-12-31T23:59:59.999Z`).toDate(),
           },
           type: {
             not: ShiftType.OFF,
@@ -145,6 +145,7 @@ export const shiftRouter = router({
     .input(
       z.object({
         year: z.string(),
+        id: z.string().or(z.string().array()).optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -152,13 +153,13 @@ export const shiftRouter = router({
         by: ['priority', 'type'],
         where: {
           user: {
-            id: ctx.session.user.id,
+            id: typeof input.id === 'string' ? input.id : ctx.session.user.id,
           },
           start: {
-            gte: dayjs(`${input.year}-01-01`).toDate(),
+            gte: dayjs(`${input.year}-01-01T00:00:00.000Z`).toDate(),
           },
           end: {
-            lte: dayjs(`${input.year}-12-31`).toDate(),
+            lte: dayjs(`${input.year}-12-31T23:59:59.999Z`).toDate(),
           },
           status: {
             not: ShiftStatus.REJECTED,

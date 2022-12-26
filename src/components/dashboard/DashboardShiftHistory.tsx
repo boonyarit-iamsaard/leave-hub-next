@@ -1,13 +1,17 @@
 import type { FC } from 'react';
 import { useEffect, useState } from 'react';
 
-import { Loader, Stack, Title } from '@mantine/core';
+import { ActionIcon, Group, Loader, Stack, Title } from '@mantine/core';
 import type { Shift } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { IconPencil } from '@tabler/icons';
 import dayjs from 'dayjs';
 import { sortBy } from 'lodash';
 import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 import { DataTable } from 'mantine-datatable';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+
 import { trpc } from '../../utils/trpc';
 
 interface DashboardShiftHistoryProps {
@@ -21,6 +25,7 @@ const DashboardShiftHistory: FC<DashboardShiftHistoryProps> = ({
 }) => {
   const PAGE_SIZE = 10;
 
+  const router = useRouter();
   const { data: sessionData } = useSession();
   const { data: shifts, isLoading: loading } =
     trpc.shift.findManyByUser.useQuery(
@@ -36,16 +41,19 @@ const DashboardShiftHistory: FC<DashboardShiftHistoryProps> = ({
   });
 
   const columns: DataTableColumn<
-    Pick<Shift, 'start' | 'end' | 'amount' | 'type' | 'priority' | 'status'>
+    Pick<
+      Shift,
+      'id' | 'start' | 'end' | 'amount' | 'type' | 'priority' | 'status'
+    >
   >[] = [
     {
       accessor: 'start',
-      render: records => dayjs(records.start).format('YYYY MMMM DD'),
+      render: ({ start }) => dayjs(start).format('YYYY MMMM DD'),
       sortable: true,
     },
     {
       accessor: 'end',
-      render: records => dayjs(records.end).format('YYYY MMMM DD'),
+      render: ({ end }) => dayjs(end).format('YYYY MMMM DD'),
       sortable: true,
     },
     {
@@ -63,6 +71,22 @@ const DashboardShiftHistory: FC<DashboardShiftHistoryProps> = ({
     {
       accessor: 'status',
       sortable: true,
+    },
+    {
+      accessor: 'actions',
+      title: 'Actions',
+      textAlignment: 'right',
+      hidden: sessionData?.user?.role !== Role.ADMIN,
+      render: ({ id }) => (
+        <Group spacing={4} position="right" noWrap>
+          <ActionIcon
+            color="company-secondary"
+            onClick={() => router.push(`/roster/edit/${id}`)}
+          >
+            <IconPencil size={16} />
+          </ActionIcon>
+        </Group>
+      ),
     },
   ];
 

@@ -14,7 +14,13 @@ const LayoutNavbar: FC<LayoutNavbarProps> = ({ open, setOpen }) => {
   const { data: sessionData } = useSession();
 
   return sessionData?.user ? (
-    <Navbar p="md" hiddenBreakpoint="md" hidden={!open} width={{ md: 240 }}>
+    <Navbar
+      p="md"
+      hiddenBreakpoint="md"
+      hidden={!open}
+      width={{ md: 240 }}
+      sx={{ zIndex: 200 }}
+    >
       <LayoutNavLinkList setOpen={setOpen} />
     </Navbar>
   ) : null;

@@ -14,17 +14,18 @@ export interface ProfileSummary {
   sum: number;
 }
 
-export const useProfileSummary = (year: string) => {
+export const useProfileSummary = (year: string, id?: string | string[]) => {
   const { data: sessionData } = useSession();
   const { data: summaryData, isLoading: loadingSummary } =
     trpc.shift.getUsageSummary.useQuery(
-      { year },
+      { year, id },
       { enabled: sessionData?.user !== undefined }
     );
   const { data: profileData, isLoading: loadingProfile } =
-    trpc.user.profile.useQuery(undefined, {
-      enabled: sessionData?.user !== undefined,
-    });
+    trpc.user.profile.useQuery(
+      { id },
+      { enabled: sessionData?.user !== undefined }
+    );
 
   const [entitlements, setEntitlements] = useState<Entitlement[]>([]);
   const [used, setUsed] = useState<number>(0);
