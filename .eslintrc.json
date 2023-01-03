@@ -12,5 +12,6 @@
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
     "prettier/prettier": "error"
-  }
+  },
+  "ignorePatterns": ["node_modules", "prisma/seed.ts"]
 }
