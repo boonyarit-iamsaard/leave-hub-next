@@ -66,34 +66,41 @@ const History: NextPage = () => {
     {
       accessor: 'type',
       sortable: true,
+      ellipsis: true,
     },
     {
       accessor: 'priority',
       sortable: true,
+      ellipsis: true,
     },
     {
       accessor: 'status',
       sortable: true,
+      ellipsis: true,
     },
     {
       accessor: 'start',
       sortable: true,
+      ellipsis: true,
       render: ({ start }) => dayjs(start).format('YYYY MMMM DD'),
     },
     {
       accessor: 'end',
       sortable: true,
+      ellipsis: true,
       render: ({ end }) => dayjs(end).format('YYYY MMMM DD'),
     },
     {
       accessor: 'amount',
       sortable: true,
+      ellipsis: true,
+      textAlignment: 'right',
     },
     {
       accessor: 'createdAt',
       sortable: true,
+      ellipsis: true,
       render: ({ createdAt }) => dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss'),
-      visibleMediaQuery: theme => `(min-width: ${theme.breakpoints.md}px)`,
     },
   ];
 
